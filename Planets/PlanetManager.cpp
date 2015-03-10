@@ -96,19 +96,8 @@ Path PlanetManager::FindPathBetweenNodes(GraphData* Start, GraphData* End)
 
 void PlanetManager::Create_Universe()
 {
-	/*
-	* The algorithm is fairly simple:
-	* Take every single planet in the set, and assign to it a point 
-	*	on a 2d plane.
-	* Then go through each planet (or node) and determine it's distance to
-	*	every other node in the set.
-	* If the distance is below a certain value (5?) then create the connection
-	* If there are no connections to a node, increase the threshold until there
-	*	is one. Stop after 1 is added however. 
-	*/
-	
 	//Double check that the planet list is initialized
-	if (m_PlanetList.size() == 0) return;
+	ASSERT(m_PlanetList.size() == NUM_PLANETS);
 
 	std::vector<Point> Points;
 	for (auto it = m_PlanetList.begin(); it != m_PlanetList.end(); it++) 
@@ -129,12 +118,11 @@ void PlanetManager::Create_Universe()
 		Points.push_back(t);
 		m_GraphData[counter++]->SetPosition(t);
 	}
-	//Time for a really bad for performance algorithm!
 	for (uint i = 0; i < Points.size(); i++)
 	{
 		uint NumConnections = 0;
 		uint Radius = 5;
-		while (NumConnections == 0)
+		while (NumConnections < MIN_NUM_NEIGHBORS)
 		{
 			for (uint j = 0; j < Points.size(); j++)
 			{
@@ -148,36 +136,6 @@ void PlanetManager::Create_Universe()
 			++Radius;
 		}
 	}
-		//for (uint j = 0; j < Points.size(); j++)
-		//{
-		//	uint Distance = DistanceSquared(Points[i], Points[j]); 
-		//	//If the two points are within the proper distance, then add edges for both of them
-		//	if (Distance < square(5)) //Start out with 5
-		//	{
-		//		//Create the connection between the two planets
-		//		m_GraphData[i]->AddNeighbor(m_PlanetList[j], std::sqrt(Distance));
-		//		m_GraphData[j]->AddNeighbor(m_PlanetList[i], std::sqrt(Distance));
-		//	}
-		//}
-		//if (NumConnections == 0)
-		//{
-		//	//Redo some of the initialization, except this time with increasing thresholds. 
-		//	for (uint distance = 6; distance < (FIELD_HEIGHT < FIELD_WIDTH ? FIELD_WIDTH : FIELD_HEIGHT); distance++)
-		//	{
-		//		for (uint j = 0; j < Points.size(); j++)
-		//		{
-		//			uint Distance = DistanceSquared(Points[i], Points[j]) < square(5);
-		//			//If the two points are within the proper distance, then add edges for both of them
-		//			if (Distance < square(6)) //Start out with 5
-		//			{
-		//				//Create the connection between the two planets
-		//				m_GraphData[i]->AddNeighbor(m_PlanetList[j], distance);
-		//				m_GraphData[j]->AddNeighbor(m_PlanetList[i], distance);
-		//				return;
-		//			}
-		//		}
-		//	}
-		//}
 }
 
 void PlanetManager::Tick()

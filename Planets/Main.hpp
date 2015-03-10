@@ -13,6 +13,13 @@ typedef unsigned int uint;
 #define FIELD_HEIGHT 1000
 #define FIELD_WIDTH  1000
 #define NUM_PLANETS  750
+#define MIN_NUM_NEIGHBORS 5
+
+#define ASSERT(expression) \
+	if(!expression) \
+		{ \
+		LogToFile("ASSERTION FAILED:" #expression);	\
+	}
 
 namespace Rand
 {
