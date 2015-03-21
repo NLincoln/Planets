@@ -18,7 +18,7 @@ OreNameGenerator::OreNameGenerator()
 	#include "orenames.txt" 
 	};
 	//Oh yes I did lol.
-	ASSERT(names.size < NUM_ORES);
+	ASSERT(names.size() < NUM_ORES);
 	//Choose the ores we need. Or just take the first few
 	for (int i = 0; i < NUM_ORES; ++i)
 	{
