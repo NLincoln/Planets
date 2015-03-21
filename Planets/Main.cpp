@@ -5,6 +5,7 @@
 //
 #include "Main.hpp"
 #include "PlanetManager.hpp"
+#include "Logger.h"
 #include <iostream>
 uint Rand::GetRandomUINT(uint min, uint max)
 {
@@ -15,16 +16,9 @@ uint Rand::GetRandomUINT(uint min, uint max)
 	
 }
 
-void LogToFile(std::string message)
-{
-	
-}
-
 int main(int argc, const char** argv)
 {
+	Logger::ClearLog();
 	PlanetManager PlanetManager;
-	std::cout << PlanetManager.GetNumPlanets() << std::endl;
-
-
 	return 0;
 }

@@ -8,6 +8,7 @@
 #include <random>
 #include <string>
 #include <fstream>
+#include "Logger.h"
 typedef unsigned int uint;
 
 #define FIELD_HEIGHT 1000
@@ -15,10 +16,14 @@ typedef unsigned int uint;
 #define NUM_PLANETS  750
 #define MIN_NUM_NEIGHBORS 5
 
-#define ASSERT(expression) \
-	if(!expression) \
-		{ \
-		LogToFile("ASSERTION FAILED:" #expression);	\
+#define ASSERT(expression)								\
+	if(!expression)										\
+	{													\
+		Logger::Log("ASSERTION FAILED:" #expression);	\
+	}													\
+	else												\
+	{													\
+		Logger::Log("ASSERTION SUCCEEDED:" #expression);\
 	}
 
 namespace Rand
@@ -33,5 +38,3 @@ bool IsInVector(T item, std::vector<T> vector)
 		return true;
 	else return false;
 }
-
-extern void LogToFile(std::string message);

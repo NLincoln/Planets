@@ -79,6 +79,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Industry.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Ore_Stockpile.cpp" />
     <ClCompile Include="Planet.cpp" />
@@ -86,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Industry.hpp" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Main.hpp" />
     <ClInclude Include="Ore_Stockpile.hpp" />
     <ClInclude Include="Path.hpp" />
