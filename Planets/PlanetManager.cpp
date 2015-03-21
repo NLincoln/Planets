@@ -24,9 +24,9 @@ uint DistanceSquared(Point a, Point b)
 void GraphData::AddNeighbor(Planet* _new, double _cost)
 {
 	//Double check that the new planet isn't already a neighbor:
-	for (auto it = m_Neighbors.begin(); it != m_Neighbors.end(); it++)
+	for (uint i = 0; i < m_Neighbors.size(); i++)
 	{
-		if (_new == it->pDestination)//Not a new planet
+		if (_new == m_Neighbors[i].pDestination)//Not a new planet
 			return;
 	}
 	Planet_Edge t;
@@ -98,7 +98,7 @@ void PlanetManager::Create_Universe()
 {
 	//Double check that the planet list is initialized
 	ASSERT(m_PlanetList.size() == NUM_PLANETS);
-
+	ASSERT(MIN_NUM_NEIGHBORS <= NUM_PLANETS);
 	std::vector<Point> Points;
 	for (auto it = m_PlanetList.begin(); it != m_PlanetList.end(); it++) 
 	{
@@ -120,14 +120,13 @@ void PlanetManager::Create_Universe()
 	}
 	for (uint i = 0; i < Points.size(); i++)
 	{
-		uint NumConnections = 0;
 		uint Radius = 5;
-		while (NumConnections < MIN_NUM_NEIGHBORS)
+		while (m_GraphData[i]->GetNumNeighbors() < MIN_NUM_NEIGHBORS)
 		{
 			for (uint j = 0; j < Points.size(); j++)
 			{
 				uint Distance = DistanceSquared(Points[i], Points[j]);
-				if (Distance < square(Radius))
+				if (Distance <= square(Radius))
 				{
 					m_GraphData[i]->AddNeighbor(m_PlanetList[j], std::sqrt(Distance));
 					m_GraphData[j]->AddNeighbor(m_PlanetList[i], std::sqrt(Distance));
