@@ -78,6 +78,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GraphManager.cpp" />
     <ClCompile Include="Industry.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -86,6 +87,7 @@
     <ClCompile Include="PlanetManager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GraphManager.h" />
     <ClInclude Include="Industry.hpp" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="Main.hpp" />

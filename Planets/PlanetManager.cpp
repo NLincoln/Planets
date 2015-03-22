@@ -21,60 +21,6 @@ uint DistanceSquared(Point a, Point b)
 	return square(a.x - b.x) + square(a.y - b.y);
 }
 
-void GraphData::AddNeighbor(Planet* _new, double _cost)
-{
-	//Double check that the new planet isn't already a neighbor:
-	for (uint i = 0; i < m_Neighbors.size(); i++)
-	{
-		if (_new == m_Neighbors[i].pDestination)//Not a new planet
-			return;
-	}
-	Planet_Edge t;
-	t.Cost = _cost;
-	t.pDestination = _new;
-	m_Neighbors.push_back(t);
-}
-
-Planet_Edge GraphData::GetNeighborEdge(uint _index)
-{
-	return m_Neighbors[_index];
-}
-
-std::vector<Planet_Edge> GraphData::GetAllNeighbors()
-{
-	return m_Neighbors; //Hate doing this, has to be done.
-}
-
-double GraphData::GetNeighborTravelCost(uint _index)
-{
-	return m_Neighbors[_index].Cost;
-}
-
-Planet* GraphData::GetNeighborPlanet(uint _index)
-{
-	return m_Neighbors[_index].pDestination;
-}
-
-void GraphData::SetPosition(Point _point)
-{
-	m_Position = _point;
-}
-
-uint GraphData::GetNumNeighbors()
-{
-	return m_Neighbors.size();
-}
-
-GraphData::GraphData(Planet* _ptr)
-{
-	m_pPlanet = _ptr;
-}
-
-GraphData::~GraphData()
-{
-	
-}
-
 template <typename T>
 uint GetElementPositionInVector(T Element, std::vector<T> arr)
 {
@@ -98,43 +44,11 @@ void PlanetManager::Create_Universe()
 {
 	//Double check that the planet list is initialized
 	ASSERT(m_PlanetList.size() == NUM_PLANETS);
-	ASSERT(MIN_NUM_NEIGHBORS <= NUM_PLANETS);
-	std::vector<Point> Points;
-	for (auto it = m_PlanetList.begin(); it != m_PlanetList.end(); it++) 
+	for (uint i = 0; i < NUM_PLANETS; ++i)
 	{
-		uint counter = 0;
-	beginning: //I want to cry
-		Point t;
-		t.x = Rand::GetRandomUINT(0, FIELD_WIDTH);
-		t.y = Rand::GetRandomUINT(0, FIELD_HEIGHT);
-		//Double check for duplicates:
-		for (uint i = 0; i < Points.size(); i++)
-		{
-			if (Points[i].x == t.x && Points[i].y == t.y)
-				goto beginning; //I just died a tiny bit. 
-		}
-		
-		//Point is unique, add it.
-		Points.push_back(t);
-		m_GraphData[counter++]->SetPosition(t);
+		m_GraphData.Add_Node(m_PlanetList[i]);
 	}
-	for (uint i = 0; i < Points.size(); i++)
-	{
-		uint Radius = 5;
-		while (m_GraphData[i]->GetNumNeighbors() < MIN_NUM_NEIGHBORS)
-		{
-			for (uint j = 0; j < Points.size(); j++)
-			{
-				uint Distance = DistanceSquared(Points[i], Points[j]);
-				if (Distance <= square(Radius))
-				{
-					m_GraphData[i]->AddNeighbor(m_PlanetList[j], std::sqrt(Distance));
-					m_GraphData[j]->AddNeighbor(m_PlanetList[i], std::sqrt(Distance));
-				}
-			}
-			++Radius;
-		}
-	}
+	m_GraphData.Create_Graph();
 }
 
 void PlanetManager::Tick()
@@ -157,8 +71,6 @@ PlanetManager::PlanetManager()
 	{
 		Planet* t = new Planet(i);
 		m_PlanetList.push_back(t);
-		GraphData* a = new GraphData(t);
-		m_GraphData.push_back(a);
 	}
 	Create_Universe();
 }
@@ -169,6 +81,6 @@ PlanetManager::~PlanetManager()
 	for (uint i = 0; i < m_PlanetList.size(); i++)
 	{
 		delete m_PlanetList[i];
-		delete m_GraphData[i];
+		delete m_GraphData->at(i);
 	}
 }

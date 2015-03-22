@@ -8,6 +8,7 @@
 #include <random>
 #include <string>
 #include <fstream>
+
 #include "Logger.h"
 typedef unsigned int uint;
 
@@ -34,7 +35,5 @@ namespace Rand
 template<typename T>
 bool IsInVector(T item, std::vector<T> vector)
 {
-	if(std::find(vector.begin(), vector.end(), item)!=vector.end())
-		return true;
-	else return false;
+	return std::find(vector.begin(), vector.end(), item) != vector.end() ? true : false;
 }
