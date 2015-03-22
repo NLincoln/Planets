@@ -49,3 +49,5 @@ Planets/Debug/*
 *.sdf
 *.opensdf
 *.suo
+
+dependencies/*
