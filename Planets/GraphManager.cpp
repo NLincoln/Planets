@@ -8,6 +8,39 @@
 #include "PlanetManager.hpp"
 #include "Path.hpp"
 
+bool DepthFirst_iter(GraphData* Start, GraphData* End, std::vector<GraphData*>* Searched)
+{
+	if (Start == NULL)
+		return false;
+	if (Start == End)
+		return true;
+	Searched->push_back(Start);
+	std::vector<Graph_Edge> Neighbors = Start->GetAllNeighbors();
+	for (uint i = 0; i < Neighbors.size(); ++i)
+	{
+		//Make sure that the node hasn't already been searched.
+		if (std::find(Searched->begin(), Searched->end(), Neighbors[i].pDestination) == Searched->end())
+			if (DepthFirst_iter(Neighbors[i].pDestination, End, Searched) == true)
+				return true;
+	}
+	return false;
+}
+
+bool DepthFirst(GraphData* Start, GraphData* End)
+{
+	std::vector<GraphData*>* Searched = new std::vector<GraphData*>;
+	if (Start == End)
+		return true;
+	Searched->push_back(Start);
+	std::vector<Graph_Edge> Neighbors = Start->GetAllNeighbors();
+	for (uint i = 0; i < Neighbors.size(); ++i)
+	{
+		if (DepthFirst_iter(Neighbors[i].pDestination, End, Searched) == true)
+			return true;
+	}
+	return false;
+}
+
 void GraphData::AddNeighbor(GraphData* _new, double _cost)
 {
 	for (uint i = 0; i < m_Neighbors.size(); ++i)
@@ -28,7 +61,7 @@ Graph_Edge GraphData::GetNeighborEdge(uint _index)
 
 std::vector<Graph_Edge> GraphData::GetAllNeighbors()
 {
-	return m_Neighbors; //Hate doing this, has to be done.
+	return m_Neighbors; 
 }
 
 double GraphData::GetNeighborTravelCost(uint _index)
@@ -63,6 +96,31 @@ GraphData::~GraphData()
 
 void GraphManager::Verify_Graph()
 {
+	/*
+	* Start out by attempting to divide the graph into subgraphs. 
+	* Then resolve those subgraphs
+	*/
+	std::vector<std::vector<GraphData*>> Subgraphs;
+	std::vector<GraphData*> sub;
+	std::vector<GraphData*> NodesLeft = m_GraphData;
+	while (NodesLeft.empty() == false)
+	{
+		GraphData* t = NodesLeft[0];
+		NodesLeft.erase(NodesLeft.begin());
+		sub.push_back(t);
+		for (uint i = 0; i < NodesLeft.size(); i++)
+		{
+			
+			if (DepthFirst(t, NodesLeft[i]))
+			{
+				sub.push_back(NodesLeft[i]);
+				NodesLeft.erase(NodesLeft.begin() + i);
+			}
+		}
+		Subgraphs.push_back(sub);
+		sub.clear();
+	}
+	//TODO: combine the subgraphs
 
 }
 
@@ -116,6 +174,7 @@ void GraphManager::Create_Graph()
 			++Radius;
 		}
 	}
+	Verify_Graph();
 }
 
 void GraphManager::Add_Node(Planet* Node)
