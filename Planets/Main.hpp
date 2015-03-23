@@ -9,7 +9,15 @@
 #include <string>
 #include <fstream>
 
+#include <SDL.h>
+#undef main
+
 #include "Logger.h"
+
+#pragma comment(lib, "SDL2.lib")
+#pragma comment(lib, "SDL2main.lib")
+
+
 typedef unsigned int uint;
 
 #define FIELD_HEIGHT 1000

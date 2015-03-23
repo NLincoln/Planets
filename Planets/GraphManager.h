@@ -39,7 +39,10 @@ public:
 	GraphData*					GetNeighborPlanet(uint _Index);
 	void						SetPosition(Point _point);
 	uint						GetNumNeighbors();
-
+	Point						GetPosition()
+	{
+		return m_Position;
+	}
 	explicit GraphData(Planet* _ptr);
 	~GraphData();
 };
@@ -60,6 +63,10 @@ public:
 	}
 	void Create_Graph();
 	void Add_Node(Planet* Node);
+	std::vector<GraphData*> GetGraphData()
+	{
+		return m_GraphData;
+	}
 	GraphManager();
 	~GraphManager();
 };

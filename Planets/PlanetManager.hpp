@@ -27,6 +27,11 @@ class PlanetManager
 public:
 	void Tick();
 
+	GraphManager GetGraphData()
+	{
+		return m_GraphData;
+	}
+
 	uint GetNumPlanets();
 	PlanetManager();
 	~PlanetManager();
