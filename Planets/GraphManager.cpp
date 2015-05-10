@@ -28,7 +28,7 @@ bool DepthFirst_iter(GraphData* Start, GraphData* End, std::vector<GraphData*>* 
 
 bool DepthFirst(GraphData* Start, GraphData* End)
 {
-	std::vector<GraphData*>* Searched = new std::vector<GraphData*>;
+	std::vector<GraphData*>* Searched = new std::vector < GraphData* > ;
 	if (Start == End)
 		return true;
 	Searched->push_back(Start);
@@ -61,7 +61,7 @@ Graph_Edge GraphData::GetNeighborEdge(uint _index)
 
 std::vector<Graph_Edge> GraphData::GetAllNeighbors()
 {
-	return m_Neighbors; 
+	return m_Neighbors;
 }
 
 double GraphData::GetNeighborTravelCost(uint _index)
@@ -97,7 +97,7 @@ GraphData::~GraphData()
 void GraphManager::Verify_Graph()
 {
 	/*
-	* Start out by attempting to divide the graph into subgraphs. 
+	* Start out by attempting to divide the graph into subgraphs.
 	* Then resolve those subgraphs
 	*/
 	std::vector<std::vector<GraphData*>> Subgraphs;
@@ -110,7 +110,7 @@ void GraphManager::Verify_Graph()
 		sub.push_back(t);
 		for (uint i = 0; i < NodesLeft.size(); i++)
 		{
-			
+
 			if (DepthFirst(t, NodesLeft[i]))
 			{
 				sub.push_back(NodesLeft[i]);
@@ -120,8 +120,41 @@ void GraphManager::Verify_Graph()
 		Subgraphs.push_back(sub);
 		sub.clear();
 	}
-	//TODO: combine the subgraphs
-
+	GraphData* First = Subgraphs[0][0];
+	GraphData* Second = Subgraphs[0][0];
+	uint MinDistanceSquared = DistanceSquared(First->GetPosition(), Second->GetPosition());
+	while (Subgraphs.size() < 0) //We actually don't want to run this. When we do again, change the [< 0] to [> 1]
+	{
+		for (uint si = 0; si < Subgraphs.size(); ++si)
+		{
+			for (uint sj = 0; sj < Subgraphs.size(); ++sj)
+			{
+				for (uint gi = 0; gi < Subgraphs[si].size(); ++gi)
+				{
+					for (uint gj = 0; gj < Subgraphs[sj].size(); ++gj)
+					{
+						//Wow. This is... REALLY dumb. But it's literally the only way I can think of to do this. 
+						if (si == sj) // We don't want to add connections within a subgraph
+						{
+							sj++;
+							goto OutsideSubgraph;
+						}
+						GraphData* tFirst = Subgraphs[si][sj];
+						GraphData* tSecond = Subgraphs[sj][gj];
+						uint tDistance = DistanceSquared(tFirst->GetPosition(), tSecond->GetPosition());
+						if (tDistance < MinDistanceSquared)
+						{
+							First = tFirst;
+							Second = tSecond;
+							MinDistanceSquared = tDistance;
+						}
+					}
+				}
+			OutsideSubgraph:
+				; // Needed because we technically do nothing here (yet?)
+			}
+		}
+	}
 }
 
 Path GraphManager::FindPath(GraphData* Start, GraphData* End)
