@@ -173,21 +173,20 @@ void GraphManager::Create_Graph()
 	ASSERT(MIN_NUM_NEIGHBORS <= NUM_PLANETS);
 	//I'm really just rewriting PlanetManager::Create_Universe() here
 	std::vector<Point> Points;
-	for (auto it = m_GraphData.begin(); it != m_GraphData.end(); it++)
+	for (uint i = 0; i < m_GraphData.size(); ++i)
 	{
-		uint counter = 0;
 	beginning:
 		Point t;
 		t.x = Rand::GetRandomUINT(0, FIELD_WIDTH);
 		t.y = Rand::GetRandomUINT(0, FIELD_HEIGHT);
 		//Make sure it's not a duplicate
-		for (uint i = 0; i < Points.size(); ++i)
+		for (uint j = 0; j < Points.size(); ++j)
 		{
-			if (Points[i].x == t.x && Points[i].y == t.y)
+			if (Points[j].x == t.x && Points[j].y == t.y)
 				goto beginning;
 		}
 		Points.push_back(t);
-		m_GraphData[counter++]->SetPosition(t);
+		m_GraphData[i]->SetPosition(t);
 	}
 	ASSERT(Points.size() == m_GraphData.size());
 	for (uint i = 0; i < Points.size(); i++)
