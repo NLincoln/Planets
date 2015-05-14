@@ -28,9 +28,14 @@ public:
 	//returns the amount the planet is paying
 	uint SellOre(Ore _ore, uint _amount);
 	uint GetOrePrice(Ore _ore);
+
+	void CreateState(std::string* Out);
 	
 	void Tick();	
-	
+	uint GetID()
+	{
+		return m_id;
+	}
 	Planet(uint _id);
 	~Planet();
 };

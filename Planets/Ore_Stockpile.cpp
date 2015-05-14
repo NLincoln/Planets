@@ -88,6 +88,17 @@ uint Ore_Map::GetTotalAmount()
 	return amount;
 }
 
+void Ore_Map::CreateState(std::string* State)
+{
+	for (uint i = 0; i < m_OreList.size(); ++i)
+	{
+		State->append(m_OreList[i]);
+		State->append(",");
+		State->append(std::to_string(m_OreMap[m_OreList[i]]));
+		State->append(";");
+	}
+}
+
 Ore_Map::Ore_Map()
 {
 

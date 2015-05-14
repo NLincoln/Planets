@@ -4,6 +4,8 @@
 //
 //
 
+#include <string>
+
 #include "Planet.hpp"
 #include "Ore_Stockpile.hpp"
 
@@ -42,6 +44,23 @@ uint Planet::SellOre(Ore _ore, uint _amount)
 uint Planet::GetOrePrice(Ore _ore)
 {
 	return m_Prices.GetOreAmount(_ore);
+}
+
+void Planet::CreateState(std::string* Out)
+{
+	Out->append(std::to_string(m_id));
+	Out->append(":");
+	Out->append(std::to_string(m_Money));
+	Out->append(",");
+	Out->append(std::to_string(m_Population));
+	Out->append(",{");
+	std::string MapStr;
+	m_Stockpile.CreateState(&MapStr);
+	Out->append(MapStr);
+	Out->append("},{");
+	m_Prices.CreateState(&MapStr);
+	Out->append(MapStr);
+	Out->append("};\n");
 }
 
 void Planet::Tick()

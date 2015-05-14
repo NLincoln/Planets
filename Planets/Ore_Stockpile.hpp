@@ -42,6 +42,9 @@ public:
 
 	std::vector<Ore> GetOreList();
 	uint GetTotalAmount();
+
+	void CreateState(std::string* State);
+
 	Ore_Map();
 	~Ore_Map();
 };

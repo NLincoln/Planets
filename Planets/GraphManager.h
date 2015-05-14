@@ -39,10 +39,15 @@ public:
 	GraphData*					GetNeighborPlanet(uint _Index);
 	void						SetPosition(Point _point);
 	uint						GetNumNeighbors();
+	Planet*						GetPlanetRef()
+	{
+		return m_pPlanet;
+	}
 	Point						GetPosition()
 	{
 		return m_Position;
 	}
+
 	explicit GraphData(Planet* _ptr);
 	~GraphData();
 };
