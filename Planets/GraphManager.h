@@ -33,6 +33,7 @@ class GraphData
 	std::vector<Graph_Edge> m_Neighbors;
 public:
 	void						AddNeighbor(GraphData* _new, double _cost);
+	void						AddNeighbor(GraphData* _new);
 	Graph_Edge					GetNeighborEdge(uint _Index);
 	std::vector<Graph_Edge>		GetAllNeighbors();
 	double						GetNeighborTravelCost(uint _Index);
@@ -56,6 +57,7 @@ class GraphManager
 {	
 	std::vector<GraphData*> m_GraphData;
 	void Verify_Graph();
+	void Combine_Subgraphs();
 public:
 	std::vector<GraphData*>* operator-> ()
 	{

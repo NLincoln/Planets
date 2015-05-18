@@ -10,9 +10,14 @@
 #include <map>
 #include <string>
 
-void GenerateStateString(std::vector<Planet*>* Data, std::string State)
+void GenerateStateString(std::vector<Planet*>* Data, std::string* State)
 {
-
+	for (uint i = 0; i < Data->size(); ++i)
+	{
+		std::string Str;
+		Data->at(i)->CreateState(&Str);
+		State->append(Str);
+	}
 }
 
 void GenerateMapString(std::vector<GraphData*>* Data, std::string* State)

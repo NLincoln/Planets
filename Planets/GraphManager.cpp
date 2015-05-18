@@ -54,6 +54,18 @@ void GraphData::AddNeighbor(GraphData* _new, double _cost)
 	m_Neighbors.push_back(t);
 }
 
+void GraphData::AddNeighbor(GraphData* _new)
+{
+	for (uint i = 0; i < m_Neighbors.size(); ++i)
+	{
+		if (_new == m_Neighbors[i].pDestination)
+			return;
+	}
+	double cost = std::sqrt(DistanceSquared(m_Position, _new->m_Position));
+	Graph_Edge t = {/*Destination, then cost*/ _new, cost };
+	m_Neighbors.push_back(t);
+}
+
 Graph_Edge GraphData::GetNeighborEdge(uint _index)
 {
 	return m_Neighbors[_index];
@@ -96,6 +108,18 @@ GraphData::~GraphData()
 
 void GraphManager::Verify_Graph()
 {
+	for (uint i = 0; i < m_GraphData.size(); ++i)
+	{
+		for (uint j = 0; j < m_GraphData.size(); ++j)
+		{
+			if (!DepthFirst(m_GraphData[i], m_GraphData[j]))
+				__debugbreak();
+		}
+	}
+}
+
+void GraphManager::Combine_Subgraphs()
+{
 	/*
 	* Start out by attempting to divide the graph into subgraphs.
 	* Then resolve those subgraphs
@@ -122,8 +146,10 @@ void GraphManager::Verify_Graph()
 	}
 	GraphData* First = Subgraphs[0][0];
 	GraphData* Second = Subgraphs[0][0];
+	uint SFirst = 0;
+	uint SSecond = 0;
 	uint MinDistanceSquared = DistanceSquared(First->GetPosition(), Second->GetPosition());
-	while (Subgraphs.size() < 0) //We actually don't want to run this. When we do again, change the [< 0] to [> 1]
+	while (Subgraphs.size() > 1) //We actually don't want to run this. When we do again, change the [< 0] to [> 1]
 	{
 		for (uint si = 0; si < Subgraphs.size(); ++si)
 		{
@@ -139,7 +165,7 @@ void GraphManager::Verify_Graph()
 							sj++;
 							goto OutsideSubgraph;
 						}
-						GraphData* tFirst = Subgraphs[si][sj];
+						GraphData* tFirst = Subgraphs[si][gi];
 						GraphData* tSecond = Subgraphs[sj][gj];
 						uint tDistance = DistanceSquared(tFirst->GetPosition(), tSecond->GetPosition());
 						if (tDistance < MinDistanceSquared)
@@ -147,6 +173,8 @@ void GraphManager::Verify_Graph()
 							First = tFirst;
 							Second = tSecond;
 							MinDistanceSquared = tDistance;
+							SFirst = si;
+							SSecond = sj;
 						}
 					}
 				}
@@ -154,6 +182,17 @@ void GraphManager::Verify_Graph()
 				; // Needed because we technically do nothing here (yet?)
 			}
 		}
+		/*
+		* Take the two points that have the smallest distance between them
+		* Form an edge between them
+		*/
+		First->AddNeighbor(Second);
+		Second->AddNeighbor(First);
+
+		/*The next step in the puzzle is to add the two subgraphs that they are in together. */
+		ASSERT(SFirst != SSecond);
+		Subgraphs[SFirst].insert(Subgraphs[SFirst].end(), Subgraphs[SSecond].begin(), Subgraphs[SSecond].end());
+		Subgraphs.erase(Subgraphs.begin() + SSecond);
 	}
 }
 
@@ -206,7 +245,7 @@ void GraphManager::Create_Graph()
 			++Radius;
 		}
 	}
-	Verify_Graph();
+	Combine_Subgraphs();
 }
 
 void GraphManager::Add_Node(Planet* Node)
