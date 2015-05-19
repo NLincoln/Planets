@@ -53,4 +53,4 @@ Planets/Debug/*
 dependencies/*
 Planets/x64/*
 x64/*
-Planets/Planets.log
+*.log

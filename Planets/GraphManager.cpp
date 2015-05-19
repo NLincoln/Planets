@@ -190,7 +190,6 @@ void GraphManager::Combine_Subgraphs()
 		Second->AddNeighbor(First);
 
 		/*The next step in the puzzle is to add the two subgraphs that they are in together. */
-		ASSERT(SFirst != SSecond);
 		Subgraphs[SFirst].insert(Subgraphs[SFirst].end(), Subgraphs[SSecond].begin(), Subgraphs[SSecond].end());
 		Subgraphs.erase(Subgraphs.begin() + SSecond);
 	}
