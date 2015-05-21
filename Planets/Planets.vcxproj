@@ -166,6 +166,7 @@
     <ClCompile Include="Ore_Stockpile.cpp" />
     <ClCompile Include="Planet.cpp" />
     <ClCompile Include="PlanetManager.cpp" />
+    <ClCompile Include="ShipManager.cpp" />
     <ClCompile Include="StateFactory.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@
     <ClInclude Include="Path.hpp" />
     <ClInclude Include="Planet.hpp" />
     <ClInclude Include="PlanetManager.hpp" />
+    <ClInclude Include="ShipManager.h" />
     <ClInclude Include="StateFactory.h" />
   </ItemGroup>
   <ItemGroup>
