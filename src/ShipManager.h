@@ -8,7 +8,7 @@
 #include <utility>
 #include <list>
 
-#include "Ore_Stockpile.hpp"
+#include "Ore_Stockpile.h"
 
 class GraphData;
 typedef std::list<GraphData*> Path;

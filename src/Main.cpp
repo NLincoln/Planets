@@ -4,7 +4,7 @@
 //
 //
 
-#include "Main.hpp"
+#include "Main.h"
 
 PlanetManager* g_pPlanetManager;
 uint Rand::GetRandomUINT(uint min, uint max)

@@ -4,7 +4,7 @@
 //
 //
 
-#include "Ore_Stockpile.hpp"
+#include "Ore_Stockpile.h"
 
 std::vector<Ore> OreNameGenerator::GetMasterOreList()
 {

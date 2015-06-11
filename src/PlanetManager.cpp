@@ -5,11 +5,11 @@
 //
 #include <map>
 
-#include "Main.hpp"
-#include "PlanetManager.hpp"
+#include "Main.h"
+#include "PlanetManager.h"
 #include "GraphManager.h"
-#include "Planet.hpp"
-#include "Path.hpp"
+#include "Planet.h"
+#include "Path.h"
 
 
 uint square(uint x)

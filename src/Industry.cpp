@@ -5,7 +5,7 @@
 //
 
 
-#include "Industry.hpp"
+#include "Industry.h"
 
 void Refinery::Tick()
 {

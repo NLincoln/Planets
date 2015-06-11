@@ -6,8 +6,8 @@
 
 #include <string>
 
-#include "Planet.hpp"
-#include "Ore_Stockpile.hpp"
+#include "Planet.h"
+#include "Ore_Stockpile.h"
 
 void Planet::UpdatePrices()
 {

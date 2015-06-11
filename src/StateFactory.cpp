@@ -6,8 +6,8 @@
 #include <string>
 
 #include "StateFactory.h"
-#include "Main.hpp"
-#include "Planet.hpp"
+#include "Main.h"
+#include "Planet.h"
 #include "GraphManager.h"
 
 std::string GenerateStateString(std::vector<Planet*>* Data)

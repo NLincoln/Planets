@@ -4,10 +4,10 @@
 //
 //
 
-#include "Main.hpp"
+#include "Main.h"
 #include "GraphManager.h"
-#include "PlanetManager.hpp"
-#include "Path.hpp"
+#include "PlanetManager.h"
+#include "Path.h"
 
 bool DepthFirst_iter(GraphData* Start, GraphData* End, std::vector<GraphData*>* Searched)
 {
