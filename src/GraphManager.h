@@ -8,11 +8,10 @@
 #include <vector>
 #include <list>
 
-#include "Main.hpp"
 class Planet;
 class GraphData;
 typedef std::list<GraphData*> Path;
-
+typedef unsigned int uint;
 
 struct Graph_Edge
 {

@@ -3,12 +3,13 @@
 //
 //
 //
-#include <queue>
 #include <map>
 
-#include "Path.hpp"
-#include "PlanetManager.hpp"
 #include "Main.hpp"
+#include "PlanetManager.hpp"
+#include "GraphManager.h"
+#include "Planet.hpp"
+#include "Path.hpp"
 
 
 uint square(uint x)
@@ -59,15 +60,51 @@ void PlanetManager::Tick()
 	}
 }
 
+GraphManager PlanetManager::GetGraphData()
+{
+	return m_GraphData;
+}
+
 uint PlanetManager::GetNumPlanets()
 {
 	return m_PlanetList.size();
 }
 
+void PlanetManager::AddOccupiedEdge(std::tuple < Ship*, Planet*, Planet*> Edge)
+{
+	m_OccupiedEdges.push_back(Edge);
+}
+
+void PlanetManager::AddOccupiedEdge(Ship* Ship, Planet* Planet1, Planet* Planet2)
+{
+	AddOccupiedEdge(std::make_tuple(Ship, Planet1, Planet2));
+}
+
+void PlanetManager::AddOccupiedEdge(Ship* Ship, std::pair < Planet*, Planet*> Planets)
+{
+	AddOccupiedEdge(std::make_tuple(Ship, Planets.first, Planets.second));
+}
+
+std::vector<Ship*> PlanetManager::QueryOccupiedEdge(std::pair<Planet*, Planet*> Key)
+{
+	std::vector<Ship*> Out;
+	if (Key.first == Key.second)
+		return Out;
+	for (uint i = 0; i < m_OccupiedEdges.size(); ++i)
+	{
+		auto t = m_OccupiedEdges[i];
+		if ((std::get<1>(t) == Key.first || std::get<1>(t) == Key.second) && (std::get<2>(t) == Key.first || std::get<2>(t) == Key.second))
+		{
+			Out.push_back(std::get<0>(t));
+		}
+	}
+	return Out;
+}
+
 PlanetManager::PlanetManager()
 {
 	//Initialize the list of planets.
-	for (size_t i = 0; i < NUM_PLANETS; i++)
+	for (uint i = 0; i < NUM_PLANETS; ++i)
 	{
 		Planet* t = new Planet(i);
 		m_PlanetList.push_back(t);

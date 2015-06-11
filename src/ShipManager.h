@@ -4,11 +4,16 @@
 //
 //
 #pragma once
+#include <vector>
+#include <utility>
+#include <list>
 
-#include "Main.hpp"
 #include "Ore_Stockpile.hpp"
-#include "PlanetManager.hpp"
-// Should Pilots be integrated? Nah. Let's keep it simple
+
+class GraphData;
+typedef std::list<GraphData*> Path;
+typedef unsigned int uint;
+class Planet;
 
 class Ship
 {
@@ -18,10 +23,16 @@ class Ship
 	uint m_CargoBayLimit;
 
 	Planet* m_pDestination;
-	
-	Path m_Route;
+	Planet* m_pPreviousPlanet;
 
+	Ore_Map m_Recipe;
+
+	Path m_Route;
+	friend class PlanetManager;
 public:
+
+	void Tick();
+
 	Ship();
 	~Ship();
 
@@ -30,9 +41,11 @@ public:
 
 class ShipManager
 {
+	std::vector<Ship> m_Ships;
 
 public:
+	void Tick();
+
 	ShipManager();
 	~ShipManager();
 };
-

@@ -4,10 +4,10 @@
 //
 //
 #pragma once
-#include <vector>
-#include "Main.hpp"
 #include "Ore_Stockpile.hpp"
+#include "Factory.h"
 
+typedef std::string Ore;
 
 class Planet
 {
@@ -16,12 +16,15 @@ private:
 	uint m_id;
 	uint m_Population;
 	
+	float m_PopulationModifier;
+
 	Ore_Map m_Stockpile;
 	Ore_Map m_Prices;
 	
+	Factory m_Factory;
+
 	void UpdatePrices();
 	void UpdatePopulation();
-	void RandomlyGenerate();
 	
 public:
 	//Sell ore to the planet

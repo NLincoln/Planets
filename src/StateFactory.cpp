@@ -3,12 +3,19 @@
 //
 //
 //
+#include <string>
 
 #include "StateFactory.h"
 #include "Main.hpp"
 #include "Planet.hpp"
-#include <map>
-#include <string>
+#include "GraphManager.h"
+
+std::string GenerateStateString(std::vector<Planet*>* Data)
+{
+	std::string Out;
+	GenerateStateString(Data, &Out);
+	return Out;
+}
 
 void GenerateStateString(std::vector<Planet*>* Data, std::string* State)
 {
@@ -18,6 +25,13 @@ void GenerateStateString(std::vector<Planet*>* Data, std::string* State)
 		Data->at(i)->CreateState(&Str);
 		State->append(Str);
 	}
+}
+
+std::string GenerateMapString(std::vector<GraphData*>* Data)
+{
+	std::string Out;
+	GenerateMapString(Data, &Out);
+	return Out;
 }
 
 void GenerateMapString(std::vector<GraphData*>* Data, std::string* State)

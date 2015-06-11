@@ -4,6 +4,7 @@
 //
 //
 
+#include "Main.hpp"
 #include "GraphManager.h"
 #include "PlanetManager.hpp"
 #include "Path.hpp"
@@ -207,8 +208,6 @@ Path GraphManager::FindPath(GraphData* Start, GraphData* End)
 void GraphManager::Create_Graph()
 {
 	//Check that the GraphData list is initialized
-	ASSERT(m_GraphData.size() == NUM_PLANETS);
-	ASSERT(MIN_NUM_NEIGHBORS <= NUM_PLANETS);
 	//I'm really just rewriting PlanetManager::Create_Universe() here
 	std::vector<Point> Points;
 	for (uint i = 0; i < m_GraphData.size(); ++i)
@@ -235,7 +234,7 @@ void GraphManager::Create_Graph()
 			for (uint j = 0; j < Points.size(); ++j)
 			{
 				uint Distance = DistanceSquared(Points[i], Points[j]);
-				if (Distance <= square(Radius))
+				if (Distance <= square(Radius) && Distance > 0) //The > 0 ensures that a planet won't be it's own neighbor
 				{
 					m_GraphData[i]->AddNeighbor(m_GraphData[j], std::sqrt(Distance));
 					m_GraphData[j]->AddNeighbor(m_GraphData[i], std::sqrt(Distance));

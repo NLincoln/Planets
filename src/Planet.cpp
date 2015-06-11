@@ -11,14 +11,26 @@
 
 void Planet::UpdatePrices()
 {
-	// I still have no idea how to do these.
-		
+	// First things first, we really don't care about a resorce if we aren't
+	// going to use it. Therefore, those that aren't deemed critical should be 
+	// set to 0
+	
+	// At the moment, the only ores that are needed are those that are those to make the ships in the factory
+
+	std::vector<Ore> NecessaryOres = m_Factory.GetRecipe().GetOreList();
+
+	// Set all the ores that are not in the list to 0;
+	for (uint i = 0; i < m_Prices.GetOreList().size(); ++i)
+	{
+
+	}
+
 }
 
 void Planet::UpdatePopulation()
 {
-	//TODO: this
-	
+	//Planet population is directly based upon their cash reserves, with a few caveats.
+	m_Population = m_Money * m_PopulationModifier;
 }
 
 uint Planet::SellOre(Ore _ore, uint _amount)
@@ -70,16 +82,20 @@ void Planet::Tick()
 	UpdatePrices();
 }
 
-void RandomlyGenerate()
-{
-	//TODO: this
-}
-
-Planet::Planet(uint _id)
+Planet::Planet(uint _id) : m_Factory()
 {
 	m_id = _id;
 	m_Money = Rand::GetRandomUINT(500, 10000);
 	m_Population = Rand::GetRandomUINT(10, 5000);
+	m_PopulationModifier = Rand::GetRandomFloat(.5, 2);
+	UpdatePrices();
+	UpdatePopulation();
+	
+	for (Ore i : m_Factory.GetRecipe().GetOreList())
+	{
+		
+	}
+
 }
 
 

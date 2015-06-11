@@ -15,9 +15,13 @@ Ship::~Ship()
 {
 }
 
+void ShipManager::Tick()
+{
+}
 
 ShipManager::ShipManager()
 {
+	
 }
 
 

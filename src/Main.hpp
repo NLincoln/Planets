@@ -6,10 +6,9 @@
 
 #pragma once
 #include <random>
-#include <string>
-#include <fstream>
-
 #include "Logger.h"
+#include "PlanetManager.hpp"
+
 
 typedef unsigned int uint;
 
@@ -28,9 +27,11 @@ typedef unsigned int uint;
 		Logger::Log("ASSERTION SUCCEEDED:" #expression);\
 	}
 
+
 namespace Rand
 {
 	uint GetRandomUINT(uint min, uint max);
+	float GetRandomFloat(float min, float max);
 }
 
 template<typename T>
@@ -38,3 +39,5 @@ bool IsInVector(T item, std::vector<T> vector)
 {
 	return std::find(vector.begin(), vector.end(), item) != vector.end();
 }
+
+extern PlanetManager* g_pPlanetManager;
