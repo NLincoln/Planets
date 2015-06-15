@@ -22,7 +22,9 @@ typedef std::string Ore;
 //  Processing a certain measure of ore.
 // Should we have a cap on stockpile size?
 // Should we have one refinery refine multiple ores in a tick? --Yes
+
 typedef unsigned int uint;
+
 class Refinery 
 {
 	Ore_Map m_RefinedStockpile;
@@ -31,9 +33,10 @@ class Refinery
 public:
 	void Tick();
 	void ReceiveRawOre(Ore type, uint amount);
-	bool GiveRefinedOre(Ore type, uint amount);
+	bool GiveRefinedOre(Ore type, uint* amount);
 	Refinery();
 	~Refinery();
+	friend class Planet;
 };
 
 class Ship_Maker
@@ -52,4 +55,3 @@ public:
 	~Ship_Maker();
 	
 };
-

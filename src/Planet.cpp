@@ -22,7 +22,20 @@ void Planet::UpdatePrices()
 	// Set all the ores that are not in the list to 0;
 	for (uint i = 0; i < m_Prices.GetOreList().size(); ++i)
 	{
-
+		if (!IsInVector(m_Prices.GetOreList()[i], NecessaryOres))
+		{
+			uint needed = m_Factory.GetRecipe().GetOreAmount(m_Prices.GetOreList()[i]);
+			//The more it is needed, the more we should be willing to pay;
+			uint price = needed;
+			//However, there needs to be a sense of entitlement here: Planets with more money should pay more because they have more.
+			price = price * m_Money * .7; // That decimal number *may* need to be adjusted
+			// However, if a planet has a fuckton of the stuff already... Then just nuke the price 
+			price = price / (m_RawStockpile.GetOreAmount(m_Prices.GetOreList()[i]) / 3); // Three here is another number that *may* need to be adjusted
+		}
+		else
+		{
+			m_Prices.SetOreAmount(m_Prices.GetOreList()[i], 0);
+		}
 	}
 
 }
@@ -48,7 +61,7 @@ uint Planet::SellOre(Ore _ore, uint _amount)
 		return 0; 
 	}
 	//We can pay for this!!!
-	m_Stockpile.AddOreAmount(_ore, _amount);
+	m_RawStockpile.AddOreAmount(_ore, _amount);
 	m_Money -= AmountPaid;
 	return AmountPaid;
 }
@@ -67,7 +80,7 @@ void Planet::CreateState(std::string* Out)
 	Out->append(std::to_string(m_Population));
 	Out->append(",{");
 	std::string MapStr;
-	m_Stockpile.CreateState(&MapStr);
+	m_RawStockpile.CreateState(&MapStr);
 	Out->append(MapStr);
 	Out->append("},{");
 	m_Prices.CreateState(&MapStr);
@@ -77,9 +90,25 @@ void Planet::CreateState(std::string* Out)
 
 void Planet::Tick()
 {
-	//TODO: this
 	UpdatePopulation();
 	UpdatePrices();
+	
+	// Transfer all of the ores from the refinery to out refined stockpile
+	for (uint i = 0; i < m_Refinery.m_RefinedStockpile.GetOreList().size(); ++i)
+	{
+		uint amount = 0;
+		m_Refinery.GiveRefinedOre(m_Refinery.m_RefinedStockpile.GetOreList()[i], &amount);
+		m_RefinedStockpile.AddOreAmount(m_Refinery.m_RefinedStockpile.GetOreList()[i], amount);
+	}
+	//Transfer all the ores from our raw stockpile to the refinery
+	for (uint i = 0; i < m_RawStockpile.GetOreList().size(); ++i)
+	{
+		uint amount = m_RawStockpile.GetOreAmount(m_RawStockpile.GetOreList()[i]);
+		m_Refinery.ReceiveRawOre(m_RawStockpile.GetOreList()[i], amount);
+		m_RawStockpile.SetOreAmount(m_RawStockpile.GetOreList()[i], 0);
+	}
+	// Call Tick() on the refinery
+	m_Refinery.Tick();
 }
 
 Planet::Planet(uint _id) : m_Factory()
@@ -91,11 +120,12 @@ Planet::Planet(uint _id) : m_Factory()
 	UpdatePrices();
 	UpdatePopulation();
 	
+	// Initialize the m_Prices and m_RawStockpile
 	for (Ore i : m_Factory.GetRecipe().GetOreList())
 	{
-		
+		m_Prices.AddOre(i, 0);
+		m_RawStockpile.AddOre(i, Rand::GetRandomUINT(20, 100));
 	}
-
 }
 
 

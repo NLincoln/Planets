@@ -18,10 +18,12 @@ private:
 	
 	float m_PopulationModifier;
 
-	Ore_Map m_Stockpile;
+	Ore_Map m_RawStockpile;
+	Ore_Map m_RefinedStockpile;
 	Ore_Map m_Prices;
 	
 	Ship_Maker m_Factory;
+	Refinery m_Refinery;
 
 	void UpdatePrices();
 	void UpdatePopulation();

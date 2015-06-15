@@ -41,14 +41,11 @@ void Refinery::ReceiveRawOre(Ore type, uint amount)
 	
 }
 
-bool Refinery::GiveRefinedOre(Ore type, uint amount)
+bool Refinery::GiveRefinedOre(Ore type, uint* amount)
 {
-	if (m_RefinedStockpile.GetOreAmount(type) > amount)
-	{
-		m_RefinedStockpile.RemoveOreAmount(type, amount);
-		return true;
-	}
-	else return false;
+	*amount = m_RefinedStockpile.GetOreAmount(type);
+	m_RefinedStockpile.SetOreAmount(type, 0);
+	return true;
 }
 
 Refinery::Refinery() : m_RefineRate(30)
