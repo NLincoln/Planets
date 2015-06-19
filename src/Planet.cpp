@@ -27,8 +27,8 @@ void Planet::UpdatePrices()
 			uint needed = m_Factory.GetRecipe().GetOreAmount(m_Prices.GetOreList()[i]);
 			//The more it is needed, the more we should be willing to pay;
 			uint price = needed;
-			//However, there needs to be a sense of entitlement here: Planets with more money should pay more because they have more.
-			price = price * m_Money * .7; // That decimal number *may* need to be adjusted
+			//Planets with more money should pay more because they have more.
+			price = (double)price * (double)m_Money * .7; // That decimal number *may* need to be adjusted
 			// However, if a planet has a fuckton of the stuff already... Then just nuke the price 
 			price = price / (m_RawStockpile.GetOreAmount(m_Prices.GetOreList()[i]) / 3); // Three here is another number that *may* need to be adjusted
 		}
@@ -37,7 +37,6 @@ void Planet::UpdatePrices()
 			m_Prices.SetOreAmount(m_Prices.GetOreList()[i], 0);
 		}
 	}
-
 }
 
 void Planet::UpdatePopulation()
@@ -109,6 +108,9 @@ void Planet::Tick()
 	}
 	// Call Tick() on the refinery
 	m_Refinery.Tick();
+
+	// Now we hand all all of the refined ore to m_Factory
+	
 }
 
 Planet::Planet(uint _id) : m_Factory()

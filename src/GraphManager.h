@@ -65,7 +65,7 @@ public:
 	Path FindPath(GraphData* Start, GraphData* End);
 	uint GetNumNodes()
 	{
-		return m_GraphData.size();
+		return (uint)m_GraphData.size();
 	}
 	void Create_Graph();
 	void Add_Node(Planet* Node);

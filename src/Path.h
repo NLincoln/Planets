@@ -104,7 +104,7 @@ public:
 		Vertex back  = ShortestPath.back();
 
 		if((front == pFrom) && (back == pTo))
-			return ShortestPath.size();
+			return (uint)ShortestPath.size();
 		else return 0;
 		
 	}

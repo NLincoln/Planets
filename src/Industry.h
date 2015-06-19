@@ -42,6 +42,7 @@ public:
 class Ship_Maker
 {
 	Ore_Map m_Recipe;
+	Ore_Map m_RefinedStockpile;
 	uint m_Price;
 	void GenerateRecipe();
 public:
@@ -50,7 +51,8 @@ public:
 		return m_Recipe;
 	}
 	uint GetPrice();
-
+	void ReceiveRefined(Ore ore, uint amount);
+	Ship* CreateShip();
 	Ship_Maker();
 	~Ship_Maker();
 	

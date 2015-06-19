@@ -68,15 +68,20 @@ void Ship_Maker::GenerateRecipe()
 	std::vector<Ore> ores = NameGen.GetMasterOreList();
 	for (uint i = 0; i < NumOres; ++i)
 	{
-		uint index = Rand::GetRandomUINT(0, ores.size());
-		m_Recipe.AddOre(ores[index], Rand::GetRandomUINT(4, 15));
-		ores.erase(ores.begin() + index);
+		uint index = Rand::GetRandomUINT(1, ores.size());
+		m_Recipe.AddOre(ores[index - 1], Rand::GetRandomUINT(4, 15));
+		ores.erase(ores.begin() + index - 1);
 	}
 }
 
 uint Ship_Maker::GetPrice()
 {
 	return m_Price;
+}
+
+void Ship_Maker::ReceiveRefined(Ore ore, uint amount)
+{
+	m_RefinedStockpile.AddOreAmount(ore, amount);
 }
 
 Ship_Maker::Ship_Maker()

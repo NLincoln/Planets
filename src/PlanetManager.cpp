@@ -44,7 +44,6 @@ Path PlanetManager::FindPathBetweenNodes(GraphData* Start, GraphData* End)
 void PlanetManager::Create_Universe()
 {
 	//Double check that the planet list is initialized
-	ASSERT(m_PlanetList.size() == NUM_PLANETS);
 	for (uint i = 0; i < NUM_PLANETS; ++i)
 	{
 		m_GraphData.Add_Node(m_PlanetList[i]);
@@ -58,6 +57,8 @@ void PlanetManager::Tick()
 	{
 		m_PlanetList[i]->Tick();
 	}
+	// Next we need to iterate across all of the ships.
+
 }
 
 GraphManager PlanetManager::GetGraphData()
@@ -67,22 +68,7 @@ GraphManager PlanetManager::GetGraphData()
 
 uint PlanetManager::GetNumPlanets()
 {
-	return m_PlanetList.size();
-}
-
-void PlanetManager::AddOccupiedEdge(std::tuple < Ship*, Planet*, Planet*> Edge)
-{
-	m_OccupiedEdges.push_back(Edge);
-}
-
-void PlanetManager::AddOccupiedEdge(Ship* Ship, Planet* Planet1, Planet* Planet2)
-{
-	AddOccupiedEdge(std::make_tuple(Ship, Planet1, Planet2));
-}
-
-void PlanetManager::AddOccupiedEdge(Ship* Ship, std::pair < Planet*, Planet*> Planets)
-{
-	AddOccupiedEdge(std::make_tuple(Ship, Planets.first, Planets.second));
+	return (uint)m_PlanetList.size();
 }
 
 std::vector<Ship*> PlanetManager::QueryOccupiedEdge(std::pair<Planet*, Planet*> Key)

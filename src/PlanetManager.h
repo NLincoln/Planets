@@ -25,7 +25,8 @@ class PlanetManager
 	Path FindPathBetweenNodes(GraphData* Start, GraphData* End);
 
 	void Create_Universe();
-	
+
+	std::vector<Ship*> m_Ships;
 	std::vector<std::tuple<Ship*, Planet*, Planet*>> m_OccupiedEdges;
 
 public:
@@ -34,10 +35,8 @@ public:
 	GraphManager GetGraphData();
 	uint GetNumPlanets();
 
-	void AddOccupiedEdge(std::tuple<Ship*, Planet*, Planet*> Edge);
-	void AddOccupiedEdge(Ship* Ship, Planet* Planet1, Planet* Planet2);
-	void AddOccupiedEdge(Ship* Ship, std::pair<Planet*, Planet*> Planets);
-	
+
+
 	std::vector<Ship*> QueryOccupiedEdge(std::pair<Planet*, Planet*> Key);
 
 	PlanetManager();

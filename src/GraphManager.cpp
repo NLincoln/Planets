@@ -94,7 +94,7 @@ void GraphData::SetPosition(Point _point)
 
 uint GraphData::GetNumNeighbors()
 {
-	return m_Neighbors.size();
+	return (uint)m_Neighbors.size();
 }
 
 GraphData::GraphData(Planet* _ptr)
