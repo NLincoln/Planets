@@ -4,8 +4,9 @@
 //
 //
 
-
 #include "Industry.h"
+#include "Main.h"
+
 
 void Refinery::Tick()
 {

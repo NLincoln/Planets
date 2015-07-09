@@ -4,9 +4,14 @@
 //
 //
 
+#include <iostream>
+
 #include "Main.h"
+#include "StateFactory.h"
+
 
 PlanetManager* g_pPlanetManager;
+GraphManager<Planet>* g_pGraphManager;
 uint Rand::GetRandomUINT(uint min, uint max)
 {
 	std::random_device rd;
@@ -26,9 +31,12 @@ float Rand::GetRandomFloat(float min, float max)
 int main(int argc, const char** argv)
 {
 	Logger::ClearLog();
+
+	GRAPH_DESC Desc = { 1000, 1000, 5, 750 };
+	g_pGraphManager = new GraphManager<Planet>(Desc);
+
 	g_pPlanetManager = new PlanetManager();
 
-	// I'm bored. Let's actually do that testing thing. 
-
+	std::cout << GenerateMapString(&g_pGraphManager->GetGraphData()) << std::endl;
 	return 0;
 }

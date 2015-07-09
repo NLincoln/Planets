@@ -12,10 +12,7 @@
 
 typedef unsigned int uint;
 
-#define FIELD_HEIGHT 1000
-#define FIELD_WIDTH  1000
 #define NUM_PLANETS  750
-#define MIN_NUM_NEIGHBORS 5
 
 #define ASSERT(expression)								\
 	if(!expression)										\
@@ -40,4 +37,7 @@ bool IsInVector(T item, std::vector<T> vector)
 	return std::find(vector.begin(), vector.end(), item) != vector.end();
 }
 
+typedef std::list<GraphData<Planet>*> Path;
+
 extern PlanetManager* g_pPlanetManager;
+extern GraphManager<Planet>* g_pGraphManager;

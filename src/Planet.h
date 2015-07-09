@@ -7,6 +7,8 @@
 #include "Ore_Stockpile.h"
 #include "Industry.h"
 
+
+class Ore_Map;
 typedef std::string Ore;
 
 class Planet

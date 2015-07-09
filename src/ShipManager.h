@@ -8,10 +8,9 @@
 #include <utility>
 #include <list>
 
+#include "Main.h" //Needed for path
 #include "Ore_Stockpile.h"
 
-class GraphData;
-typedef std::list<GraphData*> Path;
 typedef unsigned int uint;
 class Planet;
 

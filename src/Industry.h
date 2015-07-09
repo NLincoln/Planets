@@ -8,8 +8,9 @@
 
 #include <string>
 #include "Ore_Stockpile.h"
-#include "Main.h"
 
+class Ore_Map;
+class Ship;
 typedef std::string Ore;
 
 // There is a fundamental difference between a factory and a Refinery

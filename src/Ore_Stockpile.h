@@ -8,7 +8,6 @@
 #include <map>
 #include <vector>
 
-#include "Main.h"
 typedef unsigned int uint;
 
 #define NUM_ORES 8
@@ -26,7 +25,6 @@ public:
 	~OreNameGenerator();
 };
 
-//The actual interface each planet uses.
 class Ore_Map
 {
 	std::map<Ore, uint> m_OreMap;

@@ -31,10 +31,10 @@ uint GetElementPositionInVector(T Element, std::vector<T> arr)
 	}
 }
 
-Path PlanetManager::FindPathBetweenNodes(GraphData* Start, GraphData* End)
+Path PlanetManager::FindPathBetweenNodes(GraphData<Planet>* Start, GraphData<Planet>* End)
 {
-	ShortestPath<GraphData*> PathData;
-	std::multimap<GraphData*, GraphData*> Edges;
+	ShortestPath<GraphData<Planet>*> PathData;
+	std::multimap<GraphData<Planet>*, GraphData<Planet>*> Edges;
 	Path Path;
 	
 	uint length = PathData.Resolve(Edges, Start, End, Path);
@@ -46,9 +46,9 @@ void PlanetManager::Create_Universe()
 	//Double check that the planet list is initialized
 	for (uint i = 0; i < NUM_PLANETS; ++i)
 	{
-		m_GraphData.Add_Node(m_PlanetList[i]);
+		g_pGraphManager->Add_Node(m_PlanetList[i]);
 	}
-	m_GraphData.Create_Graph();
+	g_pGraphManager->Create_Graph();
 }
 
 void PlanetManager::Tick()
@@ -59,11 +59,6 @@ void PlanetManager::Tick()
 	}
 	// Next we need to iterate across all of the ships.
 
-}
-
-GraphManager PlanetManager::GetGraphData()
-{
-	return m_GraphData;
 }
 
 uint PlanetManager::GetNumPlanets()
@@ -104,6 +99,5 @@ PlanetManager::~PlanetManager()
 	for (uint i = 0; i < m_PlanetList.size(); i++)
 	{
 		delete m_PlanetList[i];
-		delete m_GraphData->at(i);
 	}
 }

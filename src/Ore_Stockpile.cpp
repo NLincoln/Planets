@@ -3,7 +3,7 @@
 //
 //
 //
-
+#include "Main.h"
 #include "Ore_Stockpile.h"
 
 std::vector<Ore> OreNameGenerator::GetMasterOreList()
@@ -15,10 +15,9 @@ OreNameGenerator::OreNameGenerator()
 {
 	std::vector<Ore> names = 
 	{
-	#include "orenames.txt" 
+	#include "orenames.txt" //Oh yes I did lol.
 	};
-	//Oh yes I did lol.
-	ASSERT(names.size() < NUM_ORES);
+
 	//Choose the ores we need. Or just take the first few
 	for (int i = 0; i < NUM_ORES; ++i)
 	{

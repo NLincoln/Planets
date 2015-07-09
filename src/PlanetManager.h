@@ -6,23 +6,22 @@
 #pragma once
 #include <list>
 #include "GraphManager.h"
+#include "Planet.h"
 
+class Planet;
 class Ship;
-typedef std::list<GraphData*> Path;
 typedef unsigned int uint;
 struct Point;
-
 
 uint square(uint x);
 uint DistanceSquared(Point a, Point b);
 
+// This is turning into a god class. Not good.
 class PlanetManager
 {
-	// This is turning into a god class. Not good.
-	GraphManager m_GraphData;
 	std::vector<Planet*> m_PlanetList;
 	
-	Path FindPathBetweenNodes(GraphData* Start, GraphData* End);
+	std::list<GraphData<Planet>*> FindPathBetweenNodes(GraphData<Planet>* Start, GraphData<Planet>* End);
 
 	void Create_Universe();
 
@@ -32,10 +31,7 @@ class PlanetManager
 public:
 	void Tick();
 
-	GraphManager GetGraphData();
 	uint GetNumPlanets();
-
-
 
 	std::vector<Ship*> QueryOccupiedEdge(std::pair<Planet*, Planet*> Key);
 

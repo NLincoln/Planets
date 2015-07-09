@@ -8,6 +8,7 @@
 
 #include "Planet.h"
 #include "Ore_Stockpile.h"
+#include "Main.h"
 
 void Planet::UpdatePrices()
 {
