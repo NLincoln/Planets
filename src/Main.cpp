@@ -32,10 +32,10 @@ int main(int argc, const char** argv)
 {
 	Logger::ClearLog();
 	Timer t;
-	for (uint i = 0; i < 3; ++i)
+	for (uint i = 0; i < 1; ++i)
 	{
 		t.start();
-		GRAPH_DESC Desc = { 1000, 1000, 5, 750 };
+		GRAPH_DESC Desc = { 1000, 1000, 5, 900 };
 		g_pGraphManager = new GraphManager<Planet>(Desc);
 
 		g_pPlanetManager = new PlanetManager();
