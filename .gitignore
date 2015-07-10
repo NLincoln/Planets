@@ -55,7 +55,6 @@ Planets/x64/*
 x64/*
 *.log
 .idea/*
-msvc/*
 bin/*
-*.sln
 CMakeLists.txt
+*.idb
