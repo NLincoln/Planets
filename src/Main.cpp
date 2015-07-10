@@ -8,7 +8,7 @@
 
 #include "Main.h"
 #include "StateFactory.h"
-
+#include "Timer.h"
 
 PlanetManager* g_pPlanetManager;
 GraphManager<Planet>* g_pGraphManager;
@@ -31,12 +31,18 @@ float Rand::GetRandomFloat(float min, float max)
 int main(int argc, const char** argv)
 {
 	Logger::ClearLog();
+	Timer t;
+	for (uint i = 0; i < 3; ++i)
+	{
+		t.start();
+		GRAPH_DESC Desc = { 1000, 1000, 5, 750 };
+		g_pGraphManager = new GraphManager<Planet>(Desc);
 
-	GRAPH_DESC Desc = { 1000, 1000, 5, 750 };
-	g_pGraphManager = new GraphManager<Planet>(Desc);
+		g_pPlanetManager = new PlanetManager();
+		t.stop();
+		std::cout << t.getElapsedTimeInSec() << std::endl;
 
-	g_pPlanetManager = new PlanetManager();
-
+	}
 	std::cout << GenerateMapString(&g_pGraphManager->GetGraphData()) << std::endl;
 	return 0;
 }
