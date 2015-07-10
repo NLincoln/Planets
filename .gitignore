@@ -56,5 +56,7 @@ x64/*
 *.log
 .idea/*
 bin/*
-CMakeLists.txt
 *.idb
+*.obj
+CMakeLists.txt
+
