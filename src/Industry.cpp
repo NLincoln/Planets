@@ -85,6 +85,11 @@ void Ship_Maker::ReceiveRefined(Ore ore, uint amount)
 	m_RefinedStockpile.AddOreAmount(ore, amount);
 }
 
+Ship * Ship_Maker::CreateShip()
+{
+	return nullptr;
+}
+
 Ship_Maker::Ship_Maker()
 {
 	GenerateRecipe();

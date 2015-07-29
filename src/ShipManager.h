@@ -24,6 +24,8 @@ class Ship
 	Planet* m_pDestination;
 	Planet* m_pPreviousPlanet;
 
+	double m_DistanceToDestination;
+
 	Ore_Map m_Recipe;
 
 	Path m_Route;

@@ -16,7 +16,6 @@ struct Point;
 uint square(uint x);
 uint DistanceSquared(Point a, Point b);
 
-// This is turning into a god class. Not good.
 class PlanetManager
 {
 	std::vector<Planet*> m_PlanetList;
@@ -29,6 +28,12 @@ class PlanetManager
 	std::vector<std::tuple<Ship*, Planet*, Planet*>> m_OccupiedEdges;
 
 public:
+
+	std::vector<Planet*> GetPlanets()
+	{
+		return m_PlanetList;
+	}
+
 	void Tick();
 
 	uint GetNumPlanets();

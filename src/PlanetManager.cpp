@@ -10,7 +10,7 @@
 #include "GraphManager.h"
 #include "Planet.h"
 #include "Path.h"
-
+#include "ShipManager.h"
 
 uint square(uint x)
 {
@@ -22,24 +22,6 @@ uint DistanceSquared(Point a, Point b)
 	return square(a.x - b.x) + square(a.y - b.y);
 }
 
-template <typename T>
-uint GetElementPositionInVector(T Element, std::vector<T> arr)
-{
-	for (uint i = 0; i < arr.size(); i++)
-	{
-		if (arr[i] == Element) return i;
-	}
-}
-
-Path PlanetManager::FindPathBetweenNodes(GraphData<Planet>* Start, GraphData<Planet>* End)
-{
-	ShortestPath<GraphData<Planet>*> PathData;
-	std::multimap<GraphData<Planet>*, GraphData<Planet>*> Edges;
-	Path Path;
-	
-	uint length = PathData.Resolve(Edges, Start, End, Path);
-	return Path;
-}
 
 void PlanetManager::Create_Universe()
 {
@@ -58,7 +40,25 @@ void PlanetManager::Tick()
 		m_PlanetList[i]->Tick();
 	}
 	// Next we need to iterate across all of the ships.
+	 
+	// The way this works is we clear the vector containing the ship location data and refill it each time.
+	// Although there's definitely a better way... This way is easier and doesn't require the ships to be aware of the planetmanager.
+	
+	m_OccupiedEdges.clear();
 
+	for (uint i = 0; i < m_Ships.size(); ++i)
+	{
+		std::tuple<Ship*, Planet*, Planet*> t;
+		Ship* s = m_Ships[i];
+		if (s->m_pDestination == NULL)
+		{
+			continue;
+		}
+		std::get<0>(t) = s;
+		std::get<1>(t) = s->m_pDestination;
+		std::get<2>(t) = s->m_pPreviousPlanet;
+		m_OccupiedEdges.push_back(t);
+	}
 }
 
 uint PlanetManager::GetNumPlanets()

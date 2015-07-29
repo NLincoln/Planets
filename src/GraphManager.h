@@ -8,6 +8,8 @@
 #include <vector>
 #include <list>
 
+#include "Util.h"
+
 typedef unsigned int uint;
 
 template<typename T>
@@ -69,6 +71,8 @@ class GraphData
 	Point m_Position;
 	std::vector<Graph_Edge<T>> m_Neighbors;
 
+	template <typename T>
+	friend class GraphManager;
 public:
 	void AddNeighbor(GraphData<T>* _new, double _cost)
 	{
@@ -110,6 +114,34 @@ public:
 		return m_Neighbors[_index].Cost;
 	}
 
+	double GetNeighborTravelCost(GraphData<T>* Node)
+	{
+		for (uint i = 0; i < m_Neighbors.size(); ++i)
+		{
+			if (m_Neighbors[i].pDestination == Node)
+			{
+				return m_Neighbors[i].Cost;
+			}
+		}
+	}
+
+	double GetNeighborTravelCost(T* Node)
+	{
+		for (uint i = 0; i < m_Neighbors.size(); ++i)
+		{
+			if (m_Neighbors[i].pDestination->GetDataRef() == Node) // Validate that this function works as advertised
+			{
+				return m_Neighbors[i].Cost;
+			}
+		}
+		return 0;
+	}
+
+	double GetNeighborTravelCost(GraphData<T*> Node)
+	{
+		return GetNeighborTravelCost(Node->GetDataRef());
+	}
+
 	GraphData<T>* GetNeighborPlanet(uint _Index)
 	{
 		return m_Neighbors[_index].pDestination;
@@ -133,6 +165,22 @@ public:
 	T* GetDataRef()
 	{
 		return m_pData;
+	}
+
+	bool operator==(GraphData<T*> c)
+	{
+		if (c.m_pData != m_pData)
+			return false;
+		if (c.m_Neighbors != m_Neighbors)
+			return false;
+		if (c.m_Position != m_Position)
+			return false;
+		return true;
+	}
+
+	bool operator!=(GraphData<T*> c)
+	{
+		return (!operator==(c));
 	}
 
 	explicit GraphData(T* _ptr)
@@ -247,7 +295,106 @@ class GraphManager
 			Subgraphs.erase(Subgraphs.begin() + SSecond);
 		}
 	}
+
+	GraphData<T>* DataTypeToGraphData(T* DataType)
+	{
+		for (uint i = 0; i < m_GraphData.size(); ++i)
+		{
+			if (m_GraphData[i]->m_pData == DataType)
+				return GraphData[i];
+		}
+		return NULL;
+	}
+
 public:
+
+	bool CreateFromString(std::string state)
+	{
+		if (m_GraphData.size() == 0) // Make sure we don't already have a generated universe
+			return false;
+		// The first step is to parse it into an array of strings
+		std::vector<std::string> PlanetList = ParseStringIntoArray(state, ';');
+		for (uint i = 0; i < PlanetList.size(); ++i)
+		{
+			auto PosAndNeighbors = ParseStringIntoArray(PlanetList[i], ':')[1]; // Because c++ is now python
+			GraphData<T>* GraphNode;
+			std::string PosString = ParseStringIntoArray(PosAndNeighbors, ',')[0];
+			std::string NeighborsString = ParseStringIntoArray(PosAndNeighbors, ',')[1];
+			
+			GraphNode->m_Position.x = atoi(ParseStringIntoArray(PosString, ' ')[0]);
+		
+		}
+	}
+
+	std::vector<T*> ShortestPath_Dijkstra(T* Start, T* End)
+	{
+		std::vector<T*> Out;
+		GraphData<T>* StartNode = DataTypeToGraphData(Start);
+		GraphData<T>* EndNode = DataTypeToGraphData(End);
+
+		if (!StartNode || !EndNode) // Invalid Datanode refs. return an empty path.
+			return Out;
+
+		std::vector<GraphData<T>*> UnvisitedNodes = m_GraphData;
+		std::vector<GraphData<T>*> VisitedNodes;
+
+		std::vector<std::pair<GraphData<T>*, double>> Costs;
+
+		auto QueryVectorPair = [](std::vector<std::pair<GraphData<T>*, double>> Costs, GraphData<T>* elem) // C++ is now javascript.
+		{
+			for (uint i = 0; i < Costs.size(); ++i)
+			{
+				if (std::get<0>(Costs[i]) == elem)
+				{
+					return std::get<1>(Costs[i]);
+				}
+			}
+			return 0.0;
+		};
+
+		auto SetVectorPairEntry = [](std::vector<std::pair<GraphData<T>*, double>> Costs, GraphData<T>* elem, double NewVal)
+		{
+			for (uint i = 0; i < Costs.size(); ++i)
+			{
+				if (std::get<0>(Costs[i]) == elem)
+				{
+					std::get<1>(Costs[i]) = NewVal;
+					return true;
+				}
+			}
+			return false;
+		};
+
+
+		
+		for (uint i = 0; i < UnvisitedNodes.size(); ++i) // Initialize the costs map
+			Costs.push_back(std::pair<GraphData<T>*, double>(UnvisitedNodes[i], UINT_MAX));
+
+		uint CurrentIndex = GetElementPositionInVector(StartNode, UnvisitedNodes);
+		
+		Costs[UnvisitedNodes[CurrentIndex]] = 0; // Initialize first element to 0. 
+		VisitedNodes.push_back(UnvisitedNodes[CurrentIndex]);
+		UnvisitedNodes.erase(UnvisitedNodes.begin() + CurrentIndex); // CurrentIndex is invalid after this step and will need to be recomputed before next use.
+
+		auto FindSmallestDistanceNode = [&]()
+		{
+			GraphData<T>* Out;
+			for (uint i = 0; i < UnvisitedNodes.size(); ++i)
+			{
+				if (Costs[UnvisitedNodes[i]] > Costs[Out])
+					Out = UnvisitedNodes[i];
+			}
+			return Out;
+		};
+
+		// Go through the unvisited vertexes, from shortest distance to longest distance. Recompute the distances at each one. Then mark it as visited. 
+		while (UnvisitedNodes.size() > 1)
+		{
+
+		}
+
+	}
+
 	std::vector<GraphData<T>*>* operator-> ()
 	{
 		return &m_GraphData;
@@ -326,7 +473,7 @@ public:
 		// We are now responsible for destructing ourselves... Ironically, our initialization is only handled indirectly. That's kinda dangerous
 		for (uint i = 0; i < m_GraphData.size(); ++i)
 		{
-			delete m_GraphData->at(i);
+			delete m_GraphData[i];
 		}
 	}
 };
