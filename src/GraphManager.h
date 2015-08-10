@@ -22,6 +22,17 @@ struct Graph_Edge
 	double Cost;
 };
 
+template <typename T>
+std::vector<GraphData<T>*> ExtractDestFromEdge(std::vector<Graph_Edge<T>> Edges)
+{
+	std::vector<GraphData<T>*> Out;
+	for (auto Edge : Edges)
+	{
+		Out.push_back(Edge.pDestination);
+	}
+	return Out;
+}
+
 struct Point
 {
 	uint x;
@@ -299,10 +310,17 @@ class GraphManager
 	GraphData<T>* DataTypeToGraphData(T* DataType)
 	{
 		for (uint i = 0; i < m_GraphData.size(); ++i)
-		{
 			if (m_GraphData[i]->m_pData == DataType)
-				return GraphData[i];
-		}
+				return m_GraphData[i];
+		
+		return NULL;
+	}
+
+	T* GraphDataToDataType(GraphData<T>* GraphNode)
+	{
+		for (uint i = 0; i < m_GraphData.size(); ++i)
+			if (m_GraphData[i] == GraphNode)
+				return m_GraphData[i]->m_pData;
 		return NULL;
 	}
 
@@ -338,67 +356,78 @@ public:
 		std::vector<GraphData<T>*> UnvisitedNodes = m_GraphData;
 		std::vector<GraphData<T>*> VisitedNodes;
 
-		std::vector<std::pair<GraphData<T>*, double>> Costs;
-
-		auto QueryVectorPair = [](std::vector<std::pair<GraphData<T>*, double>> Costs, GraphData<T>* elem) // C++ is now javascript.
-		{
-			for (uint i = 0; i < Costs.size(); ++i)
-			{
-				if (std::get<0>(Costs[i]) == elem)
-				{
-					return std::get<1>(Costs[i]);
-				}
-			}
-			return 0.0;
-		};
-
-		auto SetVectorPairEntry = [](std::vector<std::pair<GraphData<T>*, double>> Costs, GraphData<T>* elem, double NewVal)
-		{
-			for (uint i = 0; i < Costs.size(); ++i)
-			{
-				if (std::get<0>(Costs[i]) == elem)
-				{
-					std::get<1>(Costs[i]) = NewVal;
-					return true;
-				}
-			}
-			return false;
-		};
-
-
+		std::map<GraphData<T>*, double> Costs;
 		
 		for (uint i = 0; i < UnvisitedNodes.size(); ++i) // Initialize the costs map
-			Costs.push_back(std::pair<GraphData<T>*, double>(UnvisitedNodes[i], UINT_MAX));
+			Costs.insert(std::pair<GraphData<T>*, double>(UnvisitedNodes[i], UINT_MAX));
+
+		GraphData<T>* CurrentNode = StartNode;
+		Costs[StartNode] = 0; // Initialize first element to 0. 
+		VisitedNodes.push_back(StartNode);
 
 		uint CurrentIndex = GetElementPositionInVector(StartNode, UnvisitedNodes);
-		
-		Costs[UnvisitedNodes[CurrentIndex]] = 0; // Initialize first element to 0. 
-		VisitedNodes.push_back(UnvisitedNodes[CurrentIndex]);
 		UnvisitedNodes.erase(UnvisitedNodes.begin() + CurrentIndex); // CurrentIndex is invalid after this step and will need to be recomputed before next use.
 
-		auto FindSmallestDistanceNode = [&]()
+		auto FindSmallestDistanceNode = [&](std::vector<GraphData<T>*> Nodes)
 		{
-			GraphData<T>* Out;
-			for (uint i = 0; i < UnvisitedNodes.size(); ++i)
-			{
-				if (Costs[UnvisitedNodes[i]] > Costs[Out])
-					Out = UnvisitedNodes[i];
-			}
+			GraphData<T>* Out = Nodes[0];
+			for (uint i = 0; i < Nodes.size(); ++i)
+				if (Costs[Nodes[i]] > Costs[Out])
+					Out = Nodes[i];
 			return Out;
 		};
 
-		// Go through the unvisited vertexes, from shortest distance to longest distance. Recompute the distances at each one. Then mark it as visited. 
-		while (UnvisitedNodes.size() > 1)
+		auto FindSmallestDistanceGraphEdge = [&](std::vector<Graph_Edge<T>> Nodes)
 		{
+			GraphData<T>* Out = Nodes[0].pDestination;
+			for (uint i = 0; i < Nodes.size(); ++i)
+				if (Costs[Nodes[i].pDestination] > Costs[Out])
+					Out = Nodes[i].pDestination;
+			return Out;
+		};
 
+		for (auto Neighbor : CurrentNode->GetAllNeighbors())
+			if (Costs[Neighbor.pDestination] > Costs[CurrentNode] + Neighbor.Cost) // Update all of the current neighbors costs
+				Costs[Neighbor.pDestination] = Costs[CurrentNode] + Neighbor.Cost;
+
+		// Go through the unvisited vertexes, from shortest distance to longest distance. Recompute the distances at each one. Then mark it as visited. 
+		while (UnvisitedNodes.size() > 1) 
+		{
+			CurrentNode = FindSmallestDistanceNode(UnvisitedNodes);
+			for (auto Neighbor : CurrentNode->GetAllNeighbors())
+			{
+				// Update all of the current neighbors costs
+				if (Costs[Neighbor.pDestination] > Costs[CurrentNode] + Neighbor.Cost)
+					Costs[Neighbor.pDestination] = Costs[CurrentNode] + Neighbor.Cost;
+			}
+			CurrentIndex = GetElementPositionInVector(CurrentNode, UnvisitedNodes);
+			VisitedNodes.push_back(UnvisitedNodes[CurrentIndex]);
+			UnvisitedNodes.erase(UnvisitedNodes.begin() + CurrentIndex);
+			if (IsInVector(EndNode, VisitedNodes))
+				break;
 		}
+		if (!Set::ElementOf(EndNode, VisitedNodes) || !Set::ElementOf(StartNode, VisitedNodes))
+			return Out; // Could not find path. Return an empty set.
 
+		// Now we have all of the necessary data to find the shortest path
+		CurrentNode = StartNode;
+		std::vector<GraphData<T>*> UnusedNodes = VisitedNodes;
+		UnusedNodes.erase(UnusedNodes.begin() + GetElementPositionInVector(CurrentNode, UnusedNodes));
+		while (CurrentNode != EndNode)
+		{
+			Out.push_back(GraphDataToDataType(CurrentNode));
+			// Places where python-esque list handling would come in handy: here 
+			CurrentNode = FindSmallestDistanceNode(Set::Intersect(ExtractDestFromEdge(CurrentNode->GetAllNeighbors()), UnusedNodes));
+			UnusedNodes.erase(UnusedNodes.begin() + GetElementPositionInVector(CurrentNode, UnusedNodes));
+		}
+		return Out;
 	}
 
 	std::vector<GraphData<T>*>* operator-> ()
 	{
 		return &m_GraphData;
 	}
+
 	std::list<GraphData<T>*> FindPath(GraphData<T>* Start, GraphData<T>* End)
 	{
 		ShortestPath<GraphData<T>*> PathData;
@@ -412,6 +441,7 @@ public:
 	{
 		return (uint)m_GraphData.size();
 	}
+
 	void Create_Graph()
 	{
 		//Check that the GraphData list is initialized
@@ -470,8 +500,7 @@ public:
 	}
 	~GraphManager() 
 	{
-		// We are now responsible for destructing ourselves... Ironically, our initialization is only handled indirectly. That's kinda dangerous
-		for (uint i = 0; i < m_GraphData.size(); ++i)
+--		for (uint i = 0; i < m_GraphData.size(); ++i)
 		{
 			delete m_GraphData[i];
 		}

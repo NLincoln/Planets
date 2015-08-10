@@ -60,3 +60,5 @@ bin/*
 *.obj
 CMakeLists.txt
 
+map.txt
+times.txt

@@ -46,7 +46,7 @@ int main(int argc, const char** argv)
 	g_pPlanetManager = new PlanetManager();
 
 	t.stop();
-	g_pGraphManager->ShortestPath_Dijkstra(g_pPlanetManager->GetPlanets()[0], g_pPlanetManager->GetPlanets()[1]);
+	g_pGraphManager->ShortestPath_Dijkstra(g_pPlanetManager->GetPlanets()[0], g_pPlanetManager->GetPlanets()[28]);
 	std::cout << t.getElapsedTimeInSec() << std::endl;
 	timerfile << Desc.height * Desc.width << "," << Desc.MinNumNeighbors << "," << Desc.NumNodes << "," << t.getElapsedTimeInSec() << std::endl;
 	timerfile.close();
