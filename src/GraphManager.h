@@ -140,17 +140,12 @@ public:
 	{
 		for (uint i = 0; i < m_Neighbors.size(); ++i)
 		{
-			if (m_Neighbors[i].pDestination->GetDataRef() == Node) // Validate that this function works as advertised
+			if (m_Neighbors[i].pDestination->m_pData == Node) // Validate that this function works as advertised
 			{
 				return m_Neighbors[i].Cost;
 			}
 		}
 		return 0;
-	}
-
-	double GetNeighborTravelCost(GraphData<T*> Node)
-	{
-		return GetNeighborTravelCost(Node->GetDataRef());
 	}
 
 	GraphData<T>* GetNeighborPlanet(uint _Index)
@@ -178,7 +173,7 @@ public:
 		return m_pData;
 	}
 
-	bool operator==(GraphData<T*> c)
+	bool operator==(GraphData<T>* c)
 	{
 		if (c.m_pData != m_pData)
 			return false;
@@ -189,7 +184,7 @@ public:
 		return true;
 	}
 
-	bool operator!=(GraphData<T*> c)
+	bool operator!=(GraphData<T>* c)
 	{
 		return (!operator==(c));
 	}
@@ -204,10 +199,11 @@ public:
 
 struct GRAPH_DESC
 {
-	uint width;
+	uint Width;
 	uint height;
 	uint MinNumNeighbors;
 	uint NumNodes;
+	bool IsRandomized;
 	//Always leave room for more :)
 };
 
@@ -219,7 +215,7 @@ class GraphManager
 	uint FIELD_HEIGHT;
 	uint MIN_NUM_NEIGHBORS;
 
-	void Verify_Graph()
+	void VerifyGraph()
 	{
 		for (uint i = 0; i < m_GraphData.size(); ++i)
 		{
@@ -231,7 +227,7 @@ class GraphManager
 		}
 	}
 
-	void Combine_Subgraphs()
+	void CombineSubgraphs()
 	{
 		/*
 		* Start out by attempting to divide the graph into subgraphs.
@@ -365,14 +361,13 @@ public:
 		Costs[StartNode] = 0; // Initialize first element to 0. 
 		VisitedNodes.push_back(StartNode);
 
-		uint CurrentIndex = GetElementPositionInVector(StartNode, UnvisitedNodes);
-		UnvisitedNodes.erase(UnvisitedNodes.begin() + CurrentIndex); // CurrentIndex is invalid after this step and will need to be recomputed before next use.
+		UnvisitedNodes.erase(UnvisitedNodes.begin() + GetElementPositionInVector(StartNode, UnvisitedNodes));
 
 		auto FindSmallestDistanceNode = [&](std::vector<GraphData<T>*> Nodes)
 		{
 			GraphData<T>* Out = Nodes[0];
 			for (uint i = 0; i < Nodes.size(); ++i)
-				if (Costs[Nodes[i]] > Costs[Out])
+				if (Costs[Nodes[i]] < Costs[Out])
 					Out = Nodes[i];
 			return Out;
 		};
@@ -381,17 +376,16 @@ public:
 		{
 			GraphData<T>* Out = Nodes[0].pDestination;
 			for (uint i = 0; i < Nodes.size(); ++i)
-				if (Costs[Nodes[i].pDestination] > Costs[Out])
+				if (Costs[Nodes[i].pDestination] < Costs[Out])
 					Out = Nodes[i].pDestination;
 			return Out;
 		};
 
 		for (auto Neighbor : CurrentNode->GetAllNeighbors())
-			if (Costs[Neighbor.pDestination] > Costs[CurrentNode] + Neighbor.Cost) // Update all of the current neighbors costs
-				Costs[Neighbor.pDestination] = Costs[CurrentNode] + Neighbor.Cost;
+			Costs[Neighbor.pDestination] = Costs[CurrentNode] + Neighbor.Cost;
 
 		// Go through the unvisited vertexes, from shortest distance to longest distance. Recompute the distances at each one. Then mark it as visited. 
-		while (UnvisitedNodes.size() > 1) 
+		while (!Set::ElementOf(EndNode, VisitedNodes)) 
 		{
 			CurrentNode = FindSmallestDistanceNode(UnvisitedNodes);
 			for (auto Neighbor : CurrentNode->GetAllNeighbors())
@@ -400,11 +394,8 @@ public:
 				if (Costs[Neighbor.pDestination] > Costs[CurrentNode] + Neighbor.Cost)
 					Costs[Neighbor.pDestination] = Costs[CurrentNode] + Neighbor.Cost;
 			}
-			CurrentIndex = GetElementPositionInVector(CurrentNode, UnvisitedNodes);
-			VisitedNodes.push_back(UnvisitedNodes[CurrentIndex]);
-			UnvisitedNodes.erase(UnvisitedNodes.begin() + CurrentIndex);
-			if (IsInVector(EndNode, VisitedNodes))
-				break;
+			VisitedNodes.push_back(CurrentNode);
+			UnvisitedNodes.erase(UnvisitedNodes.begin() + GetElementPositionInVector(CurrentNode, UnvisitedNodes));
 		}
 		if (!Set::ElementOf(EndNode, VisitedNodes) || !Set::ElementOf(StartNode, VisitedNodes))
 			return Out; // Could not find path. Return an empty set.
@@ -416,7 +407,7 @@ public:
 		while (CurrentNode != EndNode)
 		{
 			Out.push_back(GraphDataToDataType(CurrentNode));
-			// Places where python-esque list handling would come in handy: here 
+			// Places where python-esque list handling would come in handy: here
 			CurrentNode = FindSmallestDistanceNode(Set::Intersect(ExtractDestFromEdge(CurrentNode->GetAllNeighbors()), UnusedNodes));
 			UnusedNodes.erase(UnusedNodes.begin() + GetElementPositionInVector(CurrentNode, UnusedNodes));
 		}
@@ -442,7 +433,7 @@ public:
 		return (uint)m_GraphData.size();
 	}
 
-	void Create_Graph()
+	void CreateRandomGraph()
 	{
 		//Check that the GraphData list is initialized
 		//I'm really just rewriting PlanetManager::Create_Universe() here
@@ -479,10 +470,10 @@ public:
 				++Radius;
 			}
 		}
-		Combine_Subgraphs();
+		CombineSubgraphs();
 	}
 
-	void Add_Node(T* Node)
+	void AddNode(T* Node)
 	{
 		GraphData<T>* t = new GraphData<T>(Node);
 		m_GraphData.push_back(t);
@@ -492,15 +483,17 @@ public:
 	{
 		return m_GraphData;
 	}
+
 	GraphManager(GRAPH_DESC Desc)
 	{
 		FIELD_HEIGHT = Desc.height;
-		FIELD_WIDTH = Desc.width;
+		FIELD_WIDTH = Desc.Width;
 		MIN_NUM_NEIGHBORS = Desc.MinNumNeighbors;
 	}
+
 	~GraphManager() 
 	{
---		for (uint i = 0; i < m_GraphData.size(); ++i)
+		for (uint i = 0; i < m_GraphData.size(); ++i)
 		{
 			delete m_GraphData[i];
 		}

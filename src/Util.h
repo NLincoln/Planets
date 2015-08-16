@@ -13,11 +13,12 @@ typedef unsigned int uint;
 template <typename T>
 uint GetElementPositionInVector(T Element, std::vector<T> arr)
 {
-	for (uint i = 0; i < arr.size(); i++)
-	{
-		if (arr[i] == Element) return i;
-	}
-	return UINT_MAX;
+	auto it = std::find(arr.begin(), arr.end(), Element);
+	
+	uint out = it - arr.begin();
+	if (arr[out] == Element)
+		return out;
+	else __debugbreak();
 }
 
 namespace Set
@@ -26,7 +27,7 @@ namespace Set
 	std::vector<T> Union(std::vector<T> A, std::vector<T> B) // List of unique elements that are in either A or B
 	{
 		std::vector<T> Out;
-		Out.insert(Out.begin(), A.begin, A.end()); 
+		Out.insert(Out.begin(), A.begin(), A.end()); 
 		for (uint i = 0; i < B.size(); ++i)
 			if (!Set::ElementOf(B[i], Out))
 				Out.push_back(B[i]);

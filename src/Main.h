@@ -37,7 +37,7 @@ bool IsInVector(T item, std::vector<T> vector)
 	return std::find(vector.begin(), vector.end(), item) != vector.end();
 }
 
-typedef std::vector<GraphData<Planet>*> Path;
+typedef std::vector<Graph_Edge<Planet>> Path;
 
 extern PlanetManager* g_pPlanetManager;
 extern GraphManager<Planet>* g_pGraphManager;

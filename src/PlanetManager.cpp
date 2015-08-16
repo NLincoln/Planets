@@ -28,9 +28,9 @@ void PlanetManager::Create_Universe()
 	//Double check that the planet list is initialized
 	for (uint i = 0; i < NUM_PLANETS; ++i)
 	{
-		g_pGraphManager->Add_Node(m_PlanetList[i]);
+		g_pGraphManager->AddNode(m_PlanetList[i]);
 	}
-	g_pGraphManager->Create_Graph();
+	g_pGraphManager->CreateRandomGraph();
 }
 
 void PlanetManager::Tick()

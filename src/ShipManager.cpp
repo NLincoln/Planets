@@ -14,8 +14,8 @@ void Ship::Tick()
 		m_pPreviousPlanet = m_pDestination;
 		if (m_Route.size() > 1)
 		{
-			m_pDestination = m_Route.front()->GetDataRef();
-			m_DistanceToDestination = m_Route.front()->GetNeighborTravelCost(m_pPreviousPlanet);
+			m_pDestination = m_Route[0].pDestination->GetDataRef();
+			m_DistanceToDestination = m_Route[0].Cost;
 		}
 		else // End of route, we are at our final destination!
 		{
