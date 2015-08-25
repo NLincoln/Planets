@@ -357,7 +357,6 @@ public:
 		for (uint i = 0; i < UnvisitedNodes.size(); ++i) // Initialize the costs map
 			Costs.insert(std::pair<GraphData<T>*, double>(UnvisitedNodes[i], UINT_MAX));
 
-		GraphData<T>* CurrentNode = StartNode;
 		Costs[StartNode] = 0; // Initialize first element to 0. 
 		VisitedNodes.push_back(StartNode);
 
@@ -374,13 +373,10 @@ public:
 
 		auto FindSmallestDistanceGraphEdge = [&](std::vector<Graph_Edge<T>> Nodes)
 		{
-			GraphData<T>* Out = Nodes[0].pDestination;
-			for (uint i = 0; i < Nodes.size(); ++i)
-				if (Costs[Nodes[i].pDestination] < Costs[Out])
-					Out = Nodes[i].pDestination;
-			return Out;
+			return FindSmallestDistanceNode(ExtractDestFromEdge(Nodes));
 		};
 
+		GraphData<T>* CurrentNode = StartNode;
 		for (auto Neighbor : CurrentNode->GetAllNeighbors())
 			Costs[Neighbor.pDestination] = Costs[CurrentNode] + Neighbor.Cost;
 

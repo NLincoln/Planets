@@ -33,30 +33,21 @@ float Rand::GetRandomFloat(float min, float max)
 int main(int argc, const char** argv)
 {
 	Logger::ClearLog();
-	Timer t;
-
-	std::ofstream timerfile;
-	timerfile.open("times.txt");
-
-	t.start();
 
 	GRAPH_DESC Desc = { 1000, 1000, 5, 900 };
 	g_pGraphManager = new GraphManager<Planet>(Desc);
-
 	g_pPlanetManager = new PlanetManager();
 
-	t.stop();
 	g_pGraphManager->ShortestPath_Dijkstra(g_pPlanetManager->GetPlanets()[0], g_pPlanetManager->GetPlanets()[28]);
-	std::cout << t.getElapsedTimeInSec() << std::endl;
-	timerfile << Desc.height * Desc.Width << "," << Desc.MinNumNeighbors << "," << Desc.NumNodes << "," << t.getElapsedTimeInSec() << std::endl;
-	timerfile.close();
 
-	std::cout << GenerateMapString(&g_pGraphManager->GetGraphData()) << std::endl;
 
 	std::ofstream mapfile;
 	mapfile.open("map.txt");
 
+	std::cout << GenerateMapString(&g_pGraphManager->GetGraphData()) << std::endl;
 	mapfile << GenerateMapString(&g_pGraphManager->GetGraphData()) << std::endl;
+	
 	mapfile.close();
+
 	return 0;
 }
