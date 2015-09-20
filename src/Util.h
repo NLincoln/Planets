@@ -18,7 +18,7 @@ uint GetElementPositionInVector(T Element, std::vector<T> arr)
 	uint out = it - arr.begin();
 	if (arr[out] == Element)
 		return out;
-	else __debugbreak();
+	else return 0;
 }
 
 namespace Set
@@ -56,6 +56,8 @@ namespace Set
 	template <typename T>
 	bool ElementOf(T Element, std::vector<T> Set)
 	{
+		if (Set.size() == 0)
+			return false;
 		for (auto elem : Set)
 			if (elem == Element)
 				return true;

@@ -10,7 +10,7 @@
 #include "PlanetManager.h"
 
 
-typedef unsigned int uint;
+typedef uint32_t uint;
 
 #define NUM_PLANETS  750
 
