@@ -34,7 +34,7 @@ int main(int argc, const char** argv)
 {
 	Logger::ClearLog();
 
-	GRAPH_DESC Desc = { 1000, 1000, 5, 900 };
+	GRAPH_DESC Desc = { 50, 50, 5, 50};
 	g_pGraphManager = new GraphManager<Planet>(Desc);
 	g_pPlanetManager = new PlanetManager();
 

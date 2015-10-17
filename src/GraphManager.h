@@ -4,7 +4,7 @@
 //
 //
 #pragma once
-
+#include <iostream>
 #include <vector>
 #include <list>
 #include <functional>
@@ -323,7 +323,7 @@ class GraphManager
 	std::vector<T*> GraphDataToDataType(std::vector<GraphData<T>*> Nodes)
 	{
 		std::vector<T*> Out;
-		for (uint i = Nodes.size() - 1; i >= 0; --i)
+		for (int i = Nodes.size() - 1; i >= 0; --i)
 		{
 			//This is NOT recursion. This function is simply overloaded, the other definition is right
 			// up there. DO NOT CONSIDER THIS TO BE RECURSION.
@@ -370,6 +370,30 @@ public:
 
 		Costs[StartNode] = 0; // Initialize first element to 0. 
 
+		auto SortNodes = [&](std::vector<GraphData<T>*> Nodes)
+		{
+			// Honestly, I'm just gonna use bubble sort. We should never have any more than 10 input nodes. 
+			for (uint i = 1; i < Nodes.size(); ++i)
+			{
+				for (uint j = 0; j < Nodes.size(); ++j)
+				{
+					if (i == j)
+						continue;
+					if (Costs[Nodes[i]] < Costs[Nodes[i - 1]])
+					{
+						GraphData<T>* t = Nodes[i];
+						Nodes[i] = Nodes[i - 1];
+						Nodes[i - 1] = t;
+					}
+				}
+			}
+			for (uint i = 0; i < Nodes.size(); i++)
+			{
+				std::cout << Costs[Nodes[i]] << std::endl;
+			}
+			return Nodes;
+		};
+
 		auto FindSmallestDistanceNode = [&](std::vector<GraphData<T>*> Nodes)
 		{
 			GraphData<T>* Out = Nodes[0];
@@ -398,85 +422,37 @@ public:
 		}
 		CurrentNode = StartNode;
 
-		std::function<std::vector<GraphData<T>*>(GraphData<T>*, std::vector<GraphData<T>*>)> FindShortestPath_recur = [&](GraphData<T>* CurrentNode, std::vector<GraphData<T>*> PathFromStart)
+		std::function<std::vector<GraphData<T>*>(GraphData<T>*, std::vector<GraphData<T>*>, uint)> FindShortestPath = [EndNode, &SortNodes, &FindShortestPath](GraphData<T>* CurrentNode, std::vector<GraphData<T>*> CurrentPath, uint Depth)
 		{
-			// Because nested functions inside of nested functions is a *great* idea...
-			auto FindLengthOfPath = [&](std::vector<GraphData<T>*> Path) //Test this
-			{
-				uint length = 0;
-				for (uint i = 0; i < Path.size() - 1; ++i)
-				{
-					for (uint j = 0; j < Path[i]->GetNumNeighbors(); ++j)
-					{
-						// Is the neighbor we are considering the next one on the path?
-						if (Path[i + 1] == Path[i]->GetAllNeighbors().at(j).pDestination)
-						{
-							length += Path[i]->GetAllNeighbors().at(j).Cost;
-							break;
-						}
-					}
-				}
-				return length;
-			};
-			auto SelectShortestPath = [&](std::vector<std::vector<GraphData<T>*>> Paths) //Test this
-			{
-				std::vector<GraphData<T>*> EmptyPath;
-				if (Paths.size() == 0)
-					return EmptyPath;
-				if (Paths.size() == 1)
-					return Paths[0];
-
-				uint ShortestIndex = 0;
-				uint ShortestLength = UINT32_MAX;
-				for (uint i = 0; i < Paths.size(); ++i)
-				{
-					if (FindLengthOfPath(Paths[i]) < ShortestLength)
-					{
-						ShortestIndex = i;
-						ShortestLength = FindLengthOfPath(Paths[i]);
-					}
-				}
-				return Paths[ShortestIndex];
-			};
-			
-			std::vector<GraphData<T>*> Out;
-
+			CurrentPath.push_back(CurrentNode);
 			if (CurrentNode == EndNode)
 			{
-				Out.push_back(CurrentNode);
-				return Out;
+				return CurrentPath;
 			}
-
-			PathFromStart.push_back(CurrentNode);
-
-			std::vector<std::vector<GraphData<T>*>> AllPaths;
-
-			bool PathFound = false;
-			for (uint i = 0; i < CurrentNode->GetNumNeighbors(); ++i)
+			if (Depth == 0)
 			{
-				GraphData<T>* tNode = CurrentNode->GetAllNeighbors().at(i).pDestination;
-				if (!Set::ElementOf(tNode, PathFromStart) && Costs[tNode] < static_cast<double>(UINT_MAX))
-				{
-					std::vector<GraphData<T>*> tPath = FindShortestPath_recur(CurrentNode->GetAllNeighbors().at(i).pDestination, PathFromStart);
-					if (Set::ElementOf(EndNode, tPath) && tPath.size() > 0)
-					{
-						AllPaths.push_back(tPath);
-						PathFound = true;
-					}
-				}
+				return CurrentPath;
 			}
-			if (PathFound)
-				return SelectShortestPath(AllPaths);
-			else return std::vector<GraphData<T>*>();
-			/*
-			* Gist of the program as I currently understand it: we neeed to have two lists: one which we build as we go downwards in recursion, in order to prevent infinite loops,
-			*   and finally one that we build coming up, which contains the actual path. We select the shortest path of all of them, then return that one. 
-			* Once we come up to the top layer of recursion, we simply have the shortest path.
-			*/
+			std::vector<GraphData<T>*> Neighbors = ExtractDestFromEdge(CurrentNode->GetAllNeighbors());
+			Neighbors = RemoveBFromA(Neighbors, CurrentPath); // Remove the nodes already on the path
+			Neighbors = SortNodes(Neighbors);
+			for (uint i = 0; i < Neighbors.size(); i++)
+			{
+				GraphData<T>* NextNode = Neighbors[i];
+				std::vector<GraphData<T>*> NewPath = FindShortestPath(NextNode, CurrentPath, Depth - 1);
+				if (Set::ElementOf(EndNode, NewPath))
+					return NewPath;
+			}
+			return CurrentPath;
 		};
-
 		std::vector<GraphData<T>*> Out;
-		Out = FindShortestPath_recur(StartNode, Out); // The out vector is empty at this point so this is Ok. 
+		for (uint i = 0; i < 100; ++i)
+		{
+			Out = FindShortestPath(CurrentNode, {}, i);
+			if (Set::ElementOf(EndNode, Out))
+				break;
+		}
+
 		return GraphDataToDataType(Out);
 	}
 
