@@ -75,23 +75,4 @@ namespace Set
 
 }
 
-//template <typename T>
-//bool ValidateInput(T input, std::vector<Range<T>> Ranges, std::vector<T> except)
-//{
-//	bool Out = false;
-//	for (uint i = 0; i < Ranges.size(); ++i)
-//	{
-//		if (IsInRange(input, Ranges[i]))
-//		{
-//			Out = true;
-//		}
-//	}
-//	if (!Out) // Failed the first check. Is it one of the exceptions?
-//	{
-//		if (Set::ElementOf(input, except))
-//			Out = true;
-//	}
-//	return Out;
-//}
-
 extern std::vector<std::string> ParseStringIntoArray(std::string string, char pch);

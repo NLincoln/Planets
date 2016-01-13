@@ -17,7 +17,7 @@ uint square(uint x)
 	return x * x;
 }
 
-uint DistanceSquared(Point a, Point b) 
+uint DistanceSquared(Vector2u a, Vector2u b) 
 {
 	return square(a.x - b.x) + square(a.y - b.y);
 }

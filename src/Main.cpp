@@ -38,12 +38,8 @@ int main(int argc, const char** argv)
 	g_pGraphManager = new GraphManager<Planet>(Desc);
 	g_pPlanetManager = new PlanetManager();
 
-	std::vector<Planet*> path = g_pGraphManager->ShortestPath_Dijkstra(g_pPlanetManager->GetPlanets()[0], g_pPlanetManager->GetPlanets()[28]);
+	auto Path = g_pGraphManager->ShortestPath_Dijkstra(g_pPlanetManager->GetPlanets()[1], g_pPlanetManager->GetPlanets()[28]);
 
-	for (auto i : path)
-	{
-		std::cout << i->GetID() << std::endl;
-	}
 
 	std::ofstream mapfile;
 	mapfile.open("map.txt");

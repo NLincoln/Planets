@@ -16,15 +16,18 @@ void Ship::Tick()
 		{
 			m_pDestination = m_Route[0].pDestination->GetDataRef();
 			m_DistanceToDestination = m_Route[0].Cost;
-		}
-		else // End of route, we are at our final destination!
-		{
-
+			m_Route.erase(m_Route.begin());
 		}
 	}
 	else
 	{
 		m_DistanceToDestination -= 1;
+	}
+
+	if (m_pDestination == m_pPreviousPlanet) // We are currently stationed at a planet
+	{
+		// Trade code goes here.
+
 	}
 }
 

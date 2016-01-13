@@ -64,3 +64,4 @@ map.txt
 times.txt
 *.obj.enc
 msvc/Debug/*
+*.opendb

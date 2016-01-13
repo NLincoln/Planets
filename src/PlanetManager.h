@@ -11,10 +11,9 @@
 class Planet;
 class Ship;
 typedef unsigned int uint;
-struct Point;
 
 uint square(uint x);
-uint DistanceSquared(Point a, Point b);
+uint DistanceSquared(Vector2u a, Vector2u b);
 
 class PlanetManager
 {

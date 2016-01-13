@@ -33,11 +33,16 @@ std::vector<GraphData<T>*> ExtractDestFromEdge(std::vector<Graph_Edge<T>> Edges)
 	return Out;
 }
 
-struct Point
+template <typename T>
+struct Vector2
 {
-	uint x;
-	uint y;
+	T x;
+	T y;
 };
+
+
+typedef Vector2<uint> Vector2u;
+typedef Vector2<float> Vector2f;
 
 template<typename T>
 bool DepthFirst_iter(GraphData<T>* Start, GraphData<T>* End, std::vector<GraphData<T>*>* Searched)
@@ -79,8 +84,13 @@ template <typename T>
 class GraphData
 {
 	T* m_pData;
-	Point m_Position;
+	Vector2u m_Position;
 	std::vector<Graph_Edge<T>> m_Neighbors;
+
+	/* Path-Finding members */
+	bool isKnown;
+	double Distance;
+	GraphData<T>* PrevVertex;
 
 	template <typename T>
 	friend class GraphManager;
@@ -112,7 +122,7 @@ public:
 
 	Graph_Edge<T> GetNeighborEdge(uint _Index)
 	{
-		return m_Neighbors[_index];
+		return m_Neighbors[_Index];
 	}
 
 	std::vector<Graph_Edge<T>> GetAllNeighbors()
@@ -122,7 +132,7 @@ public:
 
 	double GetNeighborTravelCost(uint _Index)
 	{
-		return m_Neighbors[_index].Cost;
+		return m_Neighbors[_Index].Cost;
 	}
 
 	double GetNeighborTravelCost(GraphData<T>* Node)
@@ -153,17 +163,17 @@ public:
 		return m_Neighbors[_index].pDestination;
 	}
 
-	void SetPosition(Point _point)
+	void SetPosition(Vector2u _point)
 	{
 		m_Position = _point;
 	}
 
 	uint GetNumNeighbors()
 	{
-		return (uint) m_Neighbors.size();
+		return static_cast<uint>(m_Neighbors.size());
 	}
 
-	Point GetPosition()
+	Vector2u GetPosition()
 	{
 		return m_Position;
 	}
@@ -352,7 +362,7 @@ public:
 		}
 	}
 
-	std::vector<T*> ShortestPath_Dijkstra(T* Start, T* End)
+	std::vector<GraphData<T>*> ShortestPath_Dijkstra(T* Start, T* End)
 	{
 		GraphData<T>* StartNode = DataTypeToGraphData(Start);
 		GraphData<T>* EndNode = DataTypeToGraphData(End);
@@ -363,97 +373,61 @@ public:
 		std::vector<GraphData<T>*> UnvisitedNodes = m_GraphData;
 		std::vector<GraphData<T>*> VisitedNodes;
 
-		std::map<GraphData<T>*, double> Costs;
-		
-		for (uint i = 0; i < UnvisitedNodes.size(); ++i) // Initialize the costs map
-			Costs.insert(std::pair<GraphData<T>*, double>(UnvisitedNodes[i], UINT_MAX));
-
-		Costs[StartNode] = 0; // Initialize first element to 0. 
-
-		auto SortNodes = [&](std::vector<GraphData<T>*> Nodes)
+		GraphData<T>* CurrentNode = StartNode;
+		for (GraphData<T>* Node : m_GraphData)
 		{
-			// Honestly, I'm just gonna use bubble sort. We should never have any more than 10 input nodes. 
-			for (uint i = 1; i < Nodes.size(); ++i)
+			Node->Distance = UINT_MAX;
+			Node->isKnown = false;
+			Node->PrevVertex = nullptr;
+		}
+
+		CurrentNode->Distance = 0;
+
+		while (CurrentNode != EndNode)
+		{
+			CurrentNode = [] (std::vector<GraphData<T>*> Nodes)
 			{
-				for (uint j = 0; j < Nodes.size(); ++j)
+				GraphData<T>* Current = Nodes[0];
+				for (GraphData<T>* Node : Nodes)
+					if (Node->Distance < Current->Distance)
+						Current = Node;
+				return Current;
+			}(UnvisitedNodes);
+
+			CurrentNode->isKnown = true;
+
+			for (Graph_Edge<T> Neighbor : CurrentNode->GetAllNeighbors())
+			{
+				if (!Neighbor.pDestination->isKnown)
 				{
-					if (i == j)
-						continue;
-					if (Costs[Nodes[i]] < Costs[Nodes[i - 1]])
+					double dist = Neighbor.Cost;
+					if (CurrentNode->Distance + dist < Neighbor.pDestination->Distance)
 					{
-						GraphData<T>* t = Nodes[i];
-						Nodes[i] = Nodes[i - 1];
-						Nodes[i - 1] = t;
+						Neighbor.pDestination->Distance = CurrentNode->Distance + dist;
+						Neighbor.pDestination->PrevVertex = CurrentNode;
 					}
 				}
 			}
-			for (uint i = 0; i < Nodes.size(); i++)
-			{
-				std::cout << Costs[Nodes[i]] << std::endl;
-			}
-			return Nodes;
-		};
-
-		auto FindSmallestDistanceNode = [&](std::vector<GraphData<T>*> Nodes)
-		{
-			GraphData<T>* Out = Nodes[0];
-			for (uint i = 0; i < Nodes.size(); ++i)
-				if (Costs[Nodes[i]] < Costs[Out])
-					Out = Nodes[i];
-			return Out;
-		};
-
-		auto FindSmallestDistanceGraphEdge = [&](std::vector<Graph_Edge<T>> Nodes)
-		{
-			return FindSmallestDistanceNode(ExtractDestFromEdge(Nodes));
-		};
-
-		GraphData<T>* CurrentNode = StartNode;
-		while (!Set::ElementOf(EndNode, VisitedNodes))
-		{
-			for (uint i = 0; i < CurrentNode->GetAllNeighbors().size(); ++i)
-			{
-				if (Costs[CurrentNode->GetAllNeighbors()[i].pDestination] > Costs[CurrentNode] + CurrentNode->GetAllNeighbors()[i].Cost)
-					Costs[CurrentNode->GetAllNeighbors()[i].pDestination] = Costs[CurrentNode] + CurrentNode->GetAllNeighbors()[i].Cost;
-			}
-			VisitedNodes.push_back(CurrentNode);
-			UnvisitedNodes.erase(UnvisitedNodes.begin() + GetElementPositionInVector(CurrentNode, UnvisitedNodes));
-			CurrentNode = FindSmallestDistanceNode(UnvisitedNodes);
+			UnvisitedNodes.erase(std::find(UnvisitedNodes.begin(), UnvisitedNodes.end(), CurrentNode));
 		}
-		CurrentNode = StartNode;
-
-		std::function<std::vector<GraphData<T>*>(GraphData<T>*, std::vector<GraphData<T>*>, uint)> FindShortestPath = [EndNode, &SortNodes, &FindShortestPath](GraphData<T>* CurrentNode, std::vector<GraphData<T>*> CurrentPath, uint Depth)
+		
+		std::function<std::vector<GraphData<T>*>(GraphData<T>*)> GetPath = [&GetPath](GraphData<T>* Node)
 		{
-			CurrentPath.push_back(CurrentNode);
-			if (CurrentNode == EndNode)
+			std::vector<GraphData<T>*> Result;
+			Result.push_back(Node);
+			
+			if (Node->PrevVertex != nullptr)
 			{
-				return CurrentPath;
+				auto Other = GetPath(Node->PrevVertex);
+				Result.insert(std::end(Result), std::begin(Other), std::end(Other));
 			}
-			if (Depth == 0)
-			{
-				return CurrentPath;
-			}
-			std::vector<GraphData<T>*> Neighbors = ExtractDestFromEdge(CurrentNode->GetAllNeighbors());
-			Neighbors = RemoveBFromA(Neighbors, CurrentPath); // Remove the nodes already on the path
-			Neighbors = SortNodes(Neighbors);
-			for (uint i = 0; i < Neighbors.size(); i++)
-			{
-				GraphData<T>* NextNode = Neighbors[i];
-				std::vector<GraphData<T>*> NewPath = FindShortestPath(NextNode, CurrentPath, Depth - 1);
-				if (Set::ElementOf(EndNode, NewPath))
-					return NewPath;
-			}
-			return CurrentPath;
+
+			return Result;
 		};
-		std::vector<GraphData<T>*> Out;
-		for (uint i = 0; i < 100; ++i)
-		{
-			Out = FindShortestPath(CurrentNode, {}, i);
-			if (Set::ElementOf(EndNode, Out))
-				break;
-		}
+		
+		std::vector<GraphData<T>*> Path = GetPath(EndNode);
 
-		return GraphDataToDataType(Out);
+		return Path;
 	}
 
 	std::vector<GraphData<T>*>* operator-> ()
@@ -472,18 +446,18 @@ public:
 
 	uint GetNumNodes()
 	{
-		return (uint)m_GraphData.size();
+		return static_cast<uint>(m_GraphData.size());
 	}
 
 	void CreateRandomGraph()
 	{
 		//Check that the GraphData list is initialized
 		//I'm really just rewriting PlanetManager::Create_Universe() here
-		std::vector<Point> Points;
+		std::vector<Vector2u> Points;
 		for (uint i = 0; i < m_GraphData.size(); ++i)
 		{
 		beginning:
-			Point t;
+			Vector2u t;
 			t.x = Rand::GetRandomUINT(0, FIELD_WIDTH);
 			t.y = Rand::GetRandomUINT(0, FIELD_HEIGHT);
 			//Make sure it's not a duplicate
